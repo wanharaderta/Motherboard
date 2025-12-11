@@ -10,27 +10,13 @@ import SwiftUI
 struct SplashScreenView: View {
     var body: some View {
         ZStack {
-            bg
-            content
+            Image("icSplashScreen")
+                .scaledToFill()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
-    }
-    
-    private var bg: Color {
-        Color.bgBridalHeath
-    }
-    
-    private var content: some View {
-        VStack {
-            Spacer()
-            
-            Image("icSplashScreen")
-                .resizable()
-                .frame(width: 250, height: 250)
-            
-            Spacer()
-        }
     }
 }
 

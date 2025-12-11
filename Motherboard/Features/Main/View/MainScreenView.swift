@@ -7,15 +7,17 @@
 
 import SwiftUI
 import Combine
+import Observation
 
 struct MainScreenView: View {
     @AppStorage(Enums.hasCompletedOnboarding.rawValue) private var hasCompletedOnboarding: Bool = false
     @State private var showSplash = true
     @StateObject private var authManager = AuthManager.shared
     @State private var cancellables = Set<AnyCancellable>()
+    @State private var navigationCoordinator = NavigationCoordinator()
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationCoordinator.navigationPath) {
             Group {
                 if hasCompletedOnboarding {
                     if authManager.isLoggedIn {
@@ -27,17 +29,34 @@ struct MainScreenView: View {
                     SplashScreenView()
                         .onAppear {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                showSplash = false
+                                withAnimation {
+                                    showSplash = false
+                                }
                             }
                         }
                 } else {
                     OnBoardingScreenView()
                 }
             }
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .splash:
+                    SplashScreenView()
+                case .onboarding:
+                    OnBoardingScreenView()
+                case .register:
+                    RegisterScreenView()
+                case .login:
+                    LoginScreenView()
+                case .home:
+                    HomeScreenView()
+                }
+            }
         }
         .onAppear {
             setupNotificationObserver()
         }
+        .environment(navigationCoordinator)
     }
 }
 
@@ -58,7 +77,9 @@ extension MainScreenView {
               let isLogin = userInfo[AppNotificationKey.isLogin.rawValue] as? Bool,
               isLogin else { return }
         
-        print("   Login successful - Navigating to Home...")
+        hasCompletedOnboarding = true
+        showSplash = false
+        navigationCoordinator.replace(with: AppRoute.home)
     }
 }
 

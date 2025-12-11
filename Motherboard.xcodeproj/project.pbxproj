@@ -21,9 +21,22 @@
 		D05FCB222ED5D51800BCD802 /* Motherboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Motherboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D0B973E92EE96C42008E0D38 /* Exceptions for "Motherboard" folder in "Motherboard" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Resources/InfoProd.plist,
+			);
+			target = D05FCB212ED5D51800BCD802 /* Motherboard */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D05FCB242ED5D51800BCD802 /* Motherboard */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D0B973E92EE96C42008E0D38 /* Exceptions for "Motherboard" folder in "Motherboard" target */,
+			);
 			path = Motherboard;
 			sourceTree = "<group>";
 		};

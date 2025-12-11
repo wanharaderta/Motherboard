@@ -30,7 +30,7 @@ struct OnboardingPageView: View {
                 
                 Text(page.subtitle)
                     .appFont(name: .montserrat, weight: .reguler, size: FontSize.title12)
-                    .foregroundColor(Color.mineShaftText.opacity(0.8))
+                    .foregroundColor(Color.mineShaft)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, Spacing.xl)
             }

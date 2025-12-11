@@ -132,28 +132,28 @@
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "0CFCBEEB-CA7B-4EF3-BA41-AECF280777AC - a963c91e9adf3be4"
+                  uuid = "0CFCBEEB-CA7B-4EF3-BA41-AECF280777AC - d27cce8ea8f93f97"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "(1) suspend resume partial function for closure #1 () async -&gt; () in Motherboard.LoginViewModel.signIn() async -&gt; ()"
                   moduleName = "Motherboard.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/macbookair/Documents/project/Motherboard%20ios/Motherboard/Motherboard/Features/Auth/Presentation/ViewModel/LoginViewModel.swift"
+                  urlString = "file:///Users/macbookair/Documents/project/Motherboard%20ios/motherboard-ios/Motherboard/Features/Auth/Presentation/ViewModel/LoginViewModel.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "39"
                   endingLineNumber = "39">
                </Location>
                <Location
-                  uuid = "0CFCBEEB-CA7B-4EF3-BA41-AECF280777AC - aa4b8017fe5fa2f6"
+                  uuid = "0CFCBEEB-CA7B-4EF3-BA41-AECF280777AC - d1548787cc79a685"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "(2) await resume partial function for closure #1 () async -&gt; () in Motherboard.LoginViewModel.signIn() async -&gt; ()"
                   moduleName = "Motherboard.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/macbookair/Documents/project/Motherboard%20ios/Motherboard/Motherboard/Features/Auth/Presentation/ViewModel/LoginViewModel.swift"
+                  urlString = "file:///Users/macbookair/Documents/project/Motherboard%20ios/motherboard-ios/Motherboard/Features/Auth/Presentation/ViewModel/LoginViewModel.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "39"
@@ -290,34 +290,50 @@
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "54BF8AB9-4506-4DFB-A4C5-84E6D92E16E0 - a963c91e9adf3be4"
+                  uuid = "54BF8AB9-4506-4DFB-A4C5-84E6D92E16E0 - d27cce8ea8f93f97"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "(1) suspend resume partial function for closure #1 () async -&gt; () in Motherboard.LoginViewModel.signIn() async -&gt; ()"
                   moduleName = "Motherboard.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/macbookair/Documents/project/Motherboard%20ios/Motherboard/Motherboard/Features/Auth/Presentation/ViewModel/LoginViewModel.swift"
+                  urlString = "file:///Users/macbookair/Documents/project/Motherboard%20ios/motherboard-ios/Motherboard/Features/Auth/Presentation/ViewModel/LoginViewModel.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "39"
                   endingLineNumber = "39">
                </Location>
                <Location
-                  uuid = "54BF8AB9-4506-4DFB-A4C5-84E6D92E16E0 - aa4b8017fe5fa2f6"
+                  uuid = "54BF8AB9-4506-4DFB-A4C5-84E6D92E16E0 - d1548787cc79a685"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "(2) await resume partial function for closure #1 () async -&gt; () in Motherboard.LoginViewModel.signIn() async -&gt; ()"
                   moduleName = "Motherboard.debug.dylib"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/macbookair/Documents/project/Motherboard%20ios/Motherboard/Motherboard/Features/Auth/Presentation/ViewModel/LoginViewModel.swift"
+                  urlString = "file:///Users/macbookair/Documents/project/Motherboard%20ios/motherboard-ios/Motherboard/Features/Auth/Presentation/ViewModel/LoginViewModel.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "39"
                   endingLineNumber = "39">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "26287D98-1F30-44DC-9E78-AA29B0AEA34C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Motherboard/Core/Managers/AuthProviderManager.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
+            landmarkName = "GoogleAuth"
+            landmarkType = "13">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -11,6 +11,7 @@
 		<string>Montserrat-Bold.ttf</string>
 		<string>Montserrat-Semibold.ttf</string>
 		<string>Montserrat-Regular.ttf</string>
+		<string>Montserrat-Medium.ttf</string>
 	</array>
 	<key>CFBundleDisplayName</key>
 	<string>$(DISPLAY_NAME)</string>
@@ -32,5 +33,16 @@
 	<string>We need access to your photo library to upload child photos.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We need access to save photos to your library.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.567087465594-gl7v1lk3gq20r46afot6e9lm977ans62</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

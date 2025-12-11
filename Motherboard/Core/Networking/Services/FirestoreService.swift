@@ -97,4 +97,15 @@ class FirestoreService {
         let ref = try await db.collection(collection).addDocument(data: encoded)
         return ref.documentID
     }
+    
+    // MARK: - Set/Upsert Document with Known ID
+    func setDocument<T: Encodable>(
+        collection: String,
+        documentID: String,
+        data: T,
+        merge: Bool = true
+    ) async throws {
+        let encoded = try Firestore.Encoder().encode(data)
+        try await db.collection(collection).document(documentID).setData(encoded, merge: merge)
+    }
 }

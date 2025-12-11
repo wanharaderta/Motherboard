@@ -29,3 +29,13 @@ enum Gender: Int, Codable, CaseIterable {
         }
     }
 }
+
+enum PlanType: Int, Codable {
+    case free = 0
+    case premium = 1
+    
+    /// Safely create from an arbitrary raw value (defaults to `.free`)
+    init(rawValue: Int) {
+        self = PlanType(rawValue: rawValue)
+    }
+}
