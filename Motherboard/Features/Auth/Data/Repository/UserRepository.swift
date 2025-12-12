@@ -10,6 +10,10 @@ import FirebaseFirestore
 
 protocol UserRepository {
     func addUser(userID: String, user: UserModelRequest) async throws
+    func listenToUserByID(
+        userID: String,
+        onUpdate: @escaping (Result<UserModelResponse?, Error>) -> Void
+    ) -> ListenerRegistration
 }
 
 class UserRepositoryImpl: UserRepository {
@@ -21,5 +25,32 @@ class UserRepositoryImpl: UserRepository {
             data: user,
             merge: true
         )
+    }
+    
+    func listenToUserByID(
+        userID: String,
+        onUpdate: @escaping (Result<UserModelResponse?, Error>) -> Void
+    ) -> ListenerRegistration {
+        let path = FirestoreCollection.users.path
+        
+        let listener = FirestoreService.shared.listenToCollectionWithID(
+            collection: path,
+            as: UserModelResponse.self
+        ) { result in
+            switch result {
+            case .success(let docs):
+                if let (docID, userData) = docs.first(where: { $0.id == userID }) {
+                    var user = userData
+                    user.id = docID
+                    DispatchQueue.main.async { onUpdate(.success(user)) }
+                } else {
+                    DispatchQueue.main.async { onUpdate(.success(nil)) }
+                }
+                
+            case .failure(let e):
+                DispatchQueue.main.async { onUpdate(.failure(e)) }
+            }
+        }
+        return listener
     }
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseAuth
+import FirebaseFirestore
 import Combine
 
 final class AuthManager: ObservableObject {
@@ -17,21 +18,43 @@ final class AuthManager: ObservableObject {
     // MARK: - Properties
     @Published var currentUser: User?
     @Published var isLoggedIn: Bool = false
+    @Published var userData: UserModelResponse?
     
     private var authStateListener: AuthStateDidChangeListenerHandle?
-    
-    // MARK: - Initialization
-    private init() {
-        // Setup auth state listener
-        setupAuthStateListener()
-    }
+    private var userListener: ListenerRegistration?
+    private let userRepository: UserRepository = UserRepositoryImpl()
     
     // MARK: - Auth State Listener
-    private func setupAuthStateListener() {
+    func fethcUserData() {
         authStateListener = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             Task { @MainActor in
                 self?.currentUser = user
-                self?.isLoggedIn = user != nil
+                
+                // Remove existing user listener
+                self?.userListener?.remove()
+                self?.userListener = nil
+                
+                // Setup user data listener when user logs in
+                if let userID = user?.uid {
+                    self?.setupUserDataListener(userID: userID)
+                } else {
+                    self?.userData = nil
+                }
+            }
+        }
+    }
+    
+    // MARK: - User Data Listener
+    private func setupUserDataListener(userID: String) {
+        userListener = userRepository.listenToUserByID(userID: userID) { [weak self] result in
+            Task { @MainActor in
+                switch result {
+                case .success(let userData):
+                    self?.userData = userData
+                    self?.isLoggedIn = userData != nil
+                case .failure(let error):
+                    print("❌ Error listening to user data: \(error.localizedDescription)")
+                }
             }
         }
     }
@@ -40,6 +63,7 @@ final class AuthManager: ObservableObject {
         if let listener = authStateListener {
             Auth.auth().removeStateDidChangeListener(listener)
         }
+        userListener?.remove()
     }
     
     // MARK: - Authentication Methods
@@ -51,16 +75,8 @@ final class AuthManager: ObservableObject {
     /// - Returns: Authenticated user
     /// - Throws: AuthError if sign in fails
     func signIn(email: String, password: String) async throws -> User {
-        do {
-            let result = try await Auth.auth().signIn(withEmail: email, password: password)
-            await MainActor.run {
-                self.currentUser = result.user
-                self.isLoggedIn = true
-            }
-            return result.user
-        } catch {
-            throw AuthError.from(error)
-        }
+        let result = try await Auth.auth().signIn(withEmail: email, password: password)
+        return result.user
     }
     
     /// Create new account with email and password
@@ -70,39 +86,21 @@ final class AuthManager: ObservableObject {
     /// - Returns: Newly created user
     /// - Throws: AuthError if registration fails
     func signUp(email: String, password: String) async throws -> User {
-        do {
-            let result = try await Auth.auth().createUser(withEmail: email, password: password)
-            await MainActor.run {
-                self.currentUser = result.user
-                self.isLoggedIn = true
-            }
-            return result.user
-        } catch {
-            throw AuthError.from(error)
-        }
+        let result = try await Auth.auth().createUser(withEmail: email, password: password)
+        return result.user
     }
     
     /// Sign out current user
     func signOut() throws {
-        do {
-            try Auth.auth().signOut()
-            Task { @MainActor in
-                self.currentUser = nil
-                self.isLoggedIn = false
-            }
-        } catch {
-            throw AuthError.from(error)
-        }
+        userListener?.remove()
+        userListener = nil
+        try Auth.auth().signOut()
     }
     
     /// Send password reset email
     /// - Parameter email: User's email address
     func resetPassword(email: String) async throws {
-        do {
-            try await Auth.auth().sendPasswordReset(withEmail: email)
-        } catch {
-            throw AuthError.from(error)
-        }
+        try await Auth.auth().sendPasswordReset(withEmail: email)
     }
     
     /// Get current user ID (convenience property)

@@ -8,7 +8,7 @@
 import Foundation
 
 struct UserModelResponse: Codable, Identifiable {
-    let id: String
+    var id: String = ""
     let name: String
     let email: String
     let planType: Int
@@ -17,4 +17,17 @@ struct UserModelResponse: Codable, Identifiable {
     let roleParent: Bool
     let createdAt: Date
     let updatedAt: Date
+    let isFillOnboardingData: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case name
+        case email
+        case planType
+        case maxKids
+        case roleCaregiver
+        case roleParent
+        case createdAt
+        case updatedAt
+        case isFillOnboardingData
+    }
 }

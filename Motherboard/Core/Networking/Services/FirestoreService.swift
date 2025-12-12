@@ -20,6 +20,7 @@ enum QueryOperator {
 
 enum FirestoreCollection {
     case users
+    case usersByID(userID: String)
     case kids(userID: String)
     
     /// Use this property when passing to Firestore APIs
@@ -27,6 +28,8 @@ enum FirestoreCollection {
         switch self {
         case .users:
             return "users"
+        case .usersByID(let userID):
+            return "users/\(userID)"
         case .kids(let userID):
             return "users/\(userID)/kids"
         }
@@ -107,5 +110,22 @@ class FirestoreService {
     ) async throws {
         let encoded = try Firestore.Encoder().encode(data)
         try await db.collection(collection).document(documentID).setData(encoded, merge: merge)
+    }
+    
+    // MARK: - Get Document
+    func getDocument<T: Decodable>(
+        collection: String,
+        documentID: String,
+        as type: T.Type
+    ) async throws -> T {
+        let doc = try await db.collection(collection).document(documentID).getDocument()
+        guard doc.exists else {
+            throw NSError(
+                domain: "FirestoreService",
+                code: 404,
+                userInfo: [NSLocalizedDescriptionKey: "Document not found"]
+            )
+        }
+        return try doc.data(as: type)
     }
 }
