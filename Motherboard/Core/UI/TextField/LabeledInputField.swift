@@ -17,7 +17,9 @@ struct LabeledInputField<Field: Hashable>: View {
     var keyboardType: UIKeyboardType = .default
     var autocapitalization: TextInputAutocapitalization = .never
     var isSecure: Bool = false
-    var placeholderColor: Color = Color.greyText
+    var labelColor: Color = Color.mineShaftOpacity86
+    var textPlaceholderColor: Color = Color.greyText
+    var bgPlaceholderColor: Color = Color.white
     var field: Field
     var focus: FocusState<Field?>.Binding
     
@@ -26,11 +28,11 @@ struct LabeledInputField<Field: Hashable>: View {
         VStack(alignment: .leading, spacing: Spacing.xs) {
             Text(label)
                 .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
-                .foregroundColor(Color.mineShaft)
+                .foregroundColor(Color.mineShaftOpacity86)
             
             inputField
                 .padding(Spacing.m)
-                .background(Color.white)
+                .background(bgPlaceholderColor)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
@@ -46,7 +48,7 @@ struct LabeledInputField<Field: Hashable>: View {
                 SecureField(
                     "",
                     text: $text,
-                    prompt: Text(placeholder).foregroundColor(placeholderColor)
+                    prompt: Text(placeholder).foregroundColor(textPlaceholderColor)
                 )
                     .textFieldStyle(.plain)
                     .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
@@ -55,7 +57,7 @@ struct LabeledInputField<Field: Hashable>: View {
                 TextField(
                     "",
                     text: $text,
-                    prompt: Text(placeholder).foregroundColor(placeholderColor)
+                    prompt: Text(placeholder).foregroundColor(textPlaceholderColor)
                 )
                     .textFieldStyle(.plain)
                     .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)

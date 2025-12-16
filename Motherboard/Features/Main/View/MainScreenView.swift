@@ -54,6 +54,7 @@ struct MainScreenView: View {
             }
         }
         .onAppear {
+            authManager.fethcUserData()
             setupNotificationObserver()
         }
         .environment(navigationCoordinator)
@@ -76,7 +77,7 @@ extension MainScreenView {
         guard let userInfo = notification.userInfo,
               let isLogin = userInfo[AppNotificationKey.isLogin.rawValue] as? Bool,
               isLogin else { return }
-        
+        authManager.fethcUserData()
         hasCompletedOnboarding = true
         showSplash = false
         navigationCoordinator.replace(with: AppRoute.home)

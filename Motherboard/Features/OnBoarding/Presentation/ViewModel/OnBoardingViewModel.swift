@@ -14,7 +14,7 @@ final class OnboardingViewModel: BaseViewModel {
     let onboardingPages: [OnboardingPageModel] = [
         OnboardingPageModel(
             title: "Set Routines",
-            subtitle: "Create daily schedules tailored to your child’s needs.",
+            subtitle: "Create daily schedules tailored to your child's needs.",
             imageName: "icImagePlayingWithDolls"
         ),
         OnboardingPageModel(

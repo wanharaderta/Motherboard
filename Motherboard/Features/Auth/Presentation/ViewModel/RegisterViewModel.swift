@@ -124,7 +124,8 @@ extension RegisterViewModel {
             roleCaregiver: false,
             roleParent: true,
             createdAt: Date(),
-            updatedAt: Date()
+            updatedAt: Date(),
+            isFillOnboardingData: false
         )
     }
     

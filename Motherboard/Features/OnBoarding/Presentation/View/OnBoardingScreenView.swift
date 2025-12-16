@@ -100,7 +100,7 @@ struct OnBoardingScreenView: View {
                         Spacer()
                         Text(Constants.alreadyHaveAnAccount)
                             .appFont(name: .montserrat, weight: .medium, size: FontSize.title12)
-                            .foregroundColor(Color.mineShaft)
+                            .foregroundColor(Color.mineShaftOpacity86)
                         
                         Button(action: {
                             completeOnboarding()

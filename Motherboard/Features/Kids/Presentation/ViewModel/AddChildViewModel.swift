@@ -86,6 +86,12 @@ class AddChildViewModel: BaseViewModel {
         return true
     }
     
+    // MARK: - Camera Image Handling
+    func handleCameraImage(_ image: UIImage) {
+        selectedImage = image
+        photoUrl = "" // Clear previous photo URL when new image is captured
+    }
+    
     // MARK: - Image Upload
     func uploadImage(image: UIImage) async throws {
         guard let userID = AuthManager.shared.currentUserID else {

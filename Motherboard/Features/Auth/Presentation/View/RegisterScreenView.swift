@@ -10,6 +10,7 @@ import SwiftUI
 struct RegisterScreenView: View {
     
     @State private var viewModel = RegisterViewModel()
+    @Environment(NavigationCoordinator.self) private var navigationCoordinator
     @FocusState private var focusedField: Field?
     
     enum Field {
@@ -33,12 +34,21 @@ struct RegisterScreenView: View {
             .scrollDismissesKeyboard(.interactively)
         }
         .navigationBarBackButtonHidden(true)
-        .alert(Constants.error, isPresented: $viewModel.isError) {
+        .alert(Constants.error, isPresented: Binding(
+            get: { viewModel.isError },
+            set: { if !$0 { viewModel.clearError() } }
+        )) {
             Button(Constants.ok) {
                 viewModel.clearError()
             }
         } message: {
             Text(viewModel.errorMessage ?? Constants.errorOccurred)
+        }
+        .onChange(of: viewModel.isSuccess) { _, isSuccess in
+            if isSuccess {
+                // Navigate to home screen after successful registration
+                navigationCoordinator.navigate(to: AppRoute.home)
+            }
         }
     }
     
@@ -51,7 +61,7 @@ struct RegisterScreenView: View {
             
             Text(Constants.registerSubtitle)
                 .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
-                .foregroundColor(Color.mineShaft)
+                .foregroundColor(Color.mineShaftOpacity86)
         }
     }
     
@@ -134,7 +144,7 @@ struct RegisterScreenView: View {
                 
                 Text(Constants.orSignUpWith)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Color.mineShaft)
+                    .foregroundColor(Color.mineShaftOpacity86)
                 
                 Rectangle()
                     .fill(Color.tundora.opacity(0.2))
@@ -175,7 +185,7 @@ struct RegisterScreenView: View {
             Spacer()
             Text(Constants.alreadyHaveAnAccount)
                 .appFont(name: .montserrat, weight: .medium, size: FontSize.title12)
-                .foregroundColor(Color.mineShaft)
+                .foregroundColor(Color.mineShaftOpacity86)
             
             Button(action: {
               //

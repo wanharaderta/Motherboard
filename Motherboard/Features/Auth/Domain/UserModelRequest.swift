@@ -17,4 +17,5 @@ struct UserModelRequest: Codable {
     let roleParent: Bool
     let createdAt: Date
     let updatedAt: Date
+    let isFillOnboardingData: Bool
 }

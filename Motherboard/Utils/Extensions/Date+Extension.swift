@@ -23,4 +23,12 @@ extension Date {
         let years = calculateAge()
         return "\(years) years"
     }
+    
+    /// Format date to MM/dd/yyyy string format
+    /// - Returns: Formatted date string (e.g., "12/25/2025")
+    func formatDate() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd/yyyy"
+        return formatter.string(from: self)
+    }
 }

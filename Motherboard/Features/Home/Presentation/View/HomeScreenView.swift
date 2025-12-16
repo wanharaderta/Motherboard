@@ -10,19 +10,33 @@ import SwiftUI
 struct HomeScreenView: View {
     
     // MARK: - Properties
+    @StateObject private var authManager = AuthManager.shared
     @State private var viewModel = HomeViewModel()
+    @State private var initialViewModel = InitialViewModel()
+    
     @State private var fetchTask: Task<Void, Never>?
     @State private var showAddChild = false
     
     var body: some View {
         ZStack {
-            VStack(spacing: 0) {
-                headerView
-                contentView
-            }
+//            VStack(spacing: 0) {
+//                headerView
+//                contentView
+//            }
+//            
+//            // Show Initial flow if user hasn't filled onboarding data
+//            if let userData = authManager.userData, !userData.isFillOnboardingData {
+//                InitialUserRoleScreenView()
+//            }
+            InitialUserRoleScreenView()
         }
         .navigationBarBackButtonHidden(true)
         .background(Color.summerGreen)
+        .environment(initialViewModel)
+        .navigationDestination(for: InitialRoute.self) { route in
+            InitialDestinationView(route: route)
+                .environment(initialViewModel)
+        }
         .onAppear {
             fetchTask = Task {
                 viewModel.loadData()

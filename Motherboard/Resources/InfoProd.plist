@@ -33,6 +33,8 @@
 	<string>We need access to your photo library to upload child photos.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We need access to save photos to your library.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to your camera to take photos of your child.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
