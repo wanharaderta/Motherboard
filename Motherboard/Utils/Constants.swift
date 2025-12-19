@@ -172,6 +172,12 @@ struct Constants {
     static let enterEmailAssociatedWithAccount = "Enter the email associated with your account."
     static let resetPassword = "Reset Password"
     static let success = "Success"
+    static let emailVerification = "Email verification"
+    static let checkYourInbox = "Check your inbox"
+    static let passwordResetLinkSent = "We've sent a password reset link to your email. Follow the instructions to create a new password."
+    static let didntReceiveEmail = "Didn't receive the email?"
+    static let resendCode = "Resend code"
+    static let passwordResetEmailHasBeenSent = "Password reset email has been sent. Please check your inbox."
     
     // MARK: - Message
     static let kidIDNotAvailable = "Kid ID is not available"
