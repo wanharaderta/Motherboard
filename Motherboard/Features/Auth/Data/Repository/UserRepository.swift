@@ -14,6 +14,7 @@ protocol UserRepository {
         userID: String,
         onUpdate: @escaping (Result<UserModelResponse?, Error>) -> Void
     ) -> ListenerRegistration
+    func updateUserRoleByDocumentID(documentID: String, role: UserRoleModel) async throws
 }
 
 class UserRepositoryImpl: UserRepository {
@@ -52,5 +53,20 @@ class UserRepositoryImpl: UserRepository {
             }
         }
         return listener
+    }
+    
+    func updateUserRoleByDocumentID(documentID: String, role: UserRoleModel) async throws {
+        let path = FirestoreCollection.users.path
+        let roleData: [String: Any] = [
+            "roleParent": role == .parent,
+            "roleCaregiver": role == .caregiver,
+            "updatedAt": Timestamp(date: Date())
+        ]
+        
+        try await FirestoreService.shared.updateDocument(
+            collection: path,
+            documentID: documentID,
+            fields: roleData
+        )
     }
 }

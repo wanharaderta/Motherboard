@@ -11,15 +11,13 @@ import SwiftUI
 struct InitialEmergencyMedicationView: View {
     
     // MARK: - Properties
+    @Environment(InitialViewModel.self) private var viewModel
+    @FocusState private var focusedField: Field?
     
     var onContinue: (() -> Void)?
     var onSkip: (() -> Void)?
     
-    @Environment(InitialViewModel.self) private var initialViewModel
-    @FocusState private var focusedField: Field?
-    
     // MARK: - Enums
-    
     enum Field {
         case autoInjectorBrand
         case dose
@@ -28,8 +26,6 @@ struct InitialEmergencyMedicationView: View {
         case instructionalYouTubeLink
         case doctorContact
     }
-    
-    // MARK: - Body
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -44,12 +40,12 @@ struct InitialEmergencyMedicationView: View {
             .padding([.top, .horizontal], Spacing.xl)
         }
         .background(Color.white.ignoresSafeArea())
-        .alert(Constants.error, isPresented: Binding(get: { initialViewModel.isError }, set: { if !$0 { initialViewModel.clearError() } })) {
+        .alert(Constants.error, isPresented: Binding(get: { viewModel.isError }, set: { if !$0 { viewModel.clearError() } })) {
             Button(Constants.ok) {
-                initialViewModel.clearError()
+                viewModel.clearError()
             }
         } message: {
-            Text(initialViewModel.errorMessage ?? Constants.errorOccurred)
+            Text(viewModel.errorMessage ?? Constants.errorOccurred)
         }
     }
     
@@ -77,15 +73,21 @@ struct InitialEmergencyMedicationView: View {
         .background(Color.green50)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
-    
+}
+
+// MARK: - Item View
+extension InitialEmergencyMedicationView {
     // MARK: - Auto-injector Brand Field
-    
     private var autoInjectorBrandField: some View {
         LabeledInputField(
             label: Constants.autoInjectorBrand,
             placeholder: Constants.placeholder,
-            text: Binding(get: { initialViewModel.autoInjectorBrand }, set: { initialViewModel.autoInjectorBrand = $0 }),
+            text: Binding(
+                get: { viewModel.emergencyMedicationRequest.autoInjectorBrand ?? "" },
+                set: { viewModel.emergencyMedicationRequest.autoInjectorBrand = $0 }
+            ),
             labelColor: Color.black300,
+            textPlaceholderColor: Color.mainGray,
             bgPlaceholderColor: Color.green50,
             field: .autoInjectorBrand,
             focus: $focusedField
@@ -93,24 +95,29 @@ struct InitialEmergencyMedicationView: View {
     }
     
     // MARK: - Dose Field
-    
     private var doseField: some View {
         MenuField(
             label: Constants.dose,
-            selectedValue: Binding(get: { initialViewModel.emergencyDose }, set: { initialViewModel.emergencyDose = $0 }),
+            selectedValue: Binding(
+                get: { viewModel.emergencyMedicationRequest.emergencyDose ?? .mgML },
+                set: { viewModel.emergencyMedicationRequest.emergencyDose = $0 }
+            ),
             field: Field.dose,
             focus: $focusedField
         )
     }
     
     // MARK: - When to Administer Field
-    
     private var whenToAdministerField: some View {
         LabeledInputField(
             label: Constants.whenToAdminister,
             placeholder: Constants.forAnaphylaxisSigns,
-            text: Binding(get: { initialViewModel.whenToAdminister }, set: { initialViewModel.whenToAdminister = $0 }),
+            text: Binding(
+                get: { viewModel.emergencyMedicationRequest.whenToAdminister ?? "" },
+                set: { viewModel.emergencyMedicationRequest.whenToAdminister = $0 }
+            ),
             labelColor: Color.black300,
+            textPlaceholderColor: Color.mainGray,
             bgPlaceholderColor: Color.green50,
             field: .whenToAdminister,
             focus: $focusedField
@@ -118,13 +125,16 @@ struct InitialEmergencyMedicationView: View {
     }
     
     // MARK: - Follow Up Steps Field
-    
     private var followUpStepsField: some View {
         LabeledInputField(
             label: Constants.followUpSteps,
             placeholder: Constants.call911,
-            text: Binding(get: { initialViewModel.followUpSteps }, set: { initialViewModel.followUpSteps = $0 }),
+            text: Binding(
+                get: { viewModel.emergencyMedicationRequest.followUpSteps ?? "" },
+                set: { viewModel.emergencyMedicationRequest.followUpSteps = $0 }
+            ),
             labelColor: Color.black300,
+            textPlaceholderColor: Color.mainGray,
             bgPlaceholderColor: Color.green50,
             field: .followUpSteps,
             focus: $focusedField
@@ -132,14 +142,17 @@ struct InitialEmergencyMedicationView: View {
     }
     
     // MARK: - Instructional YouTube Link Field
-    
     private var instructionalYouTubeLinkField: some View {
         LabeledInputField(
             label: Constants.instructionalYouTubeLink,
             placeholder: Constants.enterLinkURL,
-            text: Binding(get: { initialViewModel.instructionalYouTubeLink }, set: { initialViewModel.instructionalYouTubeLink = $0 }),
+            text: Binding(
+                get: { viewModel.emergencyMedicationRequest.instructionalYouTubeLink ?? "" },
+                set: { viewModel.emergencyMedicationRequest.instructionalYouTubeLink = $0 }
+            ),
             keyboardType: .URL,
             labelColor: Color.black300,
+            textPlaceholderColor: Color.mainGray,
             bgPlaceholderColor: Color.green50,
             field: .instructionalYouTubeLink,
             focus: $focusedField
@@ -147,48 +160,67 @@ struct InitialEmergencyMedicationView: View {
     }
     
     // MARK: - Doctor Contact Field
-    
     private var doctorContactField: some View {
         LabeledInputField(
             label: Constants.doctorContact,
             placeholder: Constants.kindlyProvideDoctorsContact,
-            text: Binding(get: { initialViewModel.doctorContact }, set: { initialViewModel.doctorContact = $0 }),
+            text: Binding(
+                get: { viewModel.emergencyMedicationRequest.doctorContact ?? "" },
+                set: { viewModel.emergencyMedicationRequest.doctorContact = $0 }
+            ),
             keyboardType: .phonePad,
             labelColor: Color.black300,
+            textPlaceholderColor: Color.mainGray,
             bgPlaceholderColor: Color.green50,
             field: .doctorContact,
             focus: $focusedField
         )
     }
     
-    // MARK: - Continue Button
-    
     private var continueButton: some View {
         Button(action: {
-            handleContinue()
+            onContinue?()
         }) {
             Text(Constants.continueString)
                 .appFont(name: .montserrat, weight: .semibold, size: FontSize.title14)
-                .foregroundColor(Color.green500)
+                .foregroundColor(isFormValid ? Color.white : Color.green500)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
-                .background(Color.white)
+                .background(isFormValid ? Color.primaryGreen900 : Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.green500, lineWidth: 1)
+                        .stroke(
+                            isFormValid ? Color.white : Color.green500,
+                            lineWidth: 1
+                        )
                 )
         }
+        .disabled(!isFormValid)
         .padding(.vertical, Spacing.xl)
     }
-    
 }
 
 // MARK: - Helper Methods
 
 extension InitialEmergencyMedicationView {
-    private func handleContinue() {
-        // All fields are optional for emergency medication, so we can always continue
-        onContinue?()
+    
+    private var isFormValid: Bool {
+        let autoInjectorBrand = (viewModel.emergencyMedicationRequest.autoInjectorBrand ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let whenToAdminister = (viewModel.emergencyMedicationRequest.whenToAdminister ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let followUpSteps = (viewModel.emergencyMedicationRequest.followUpSteps ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let instructionalYouTubeLink = (viewModel.emergencyMedicationRequest.instructionalYouTubeLink ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let doctorContact = (viewModel.emergencyMedicationRequest.doctorContact ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        return !autoInjectorBrand.isEmpty &&
+               !whenToAdminister.isEmpty &&
+               !followUpSteps.isEmpty &&
+               !instructionalYouTubeLink.isEmpty &&
+               !doctorContact.isEmpty
     }
 }

@@ -28,11 +28,9 @@ enum InitialRoute: Hashable, Identifiable {
 // MARK: - Initial Destination View
 struct InitialDestinationView: View {
     let route: InitialRoute
-    @State private var viewModel = InitialViewModel()
     
     var body: some View {
         destinationView(for: route)
-            .environment(viewModel)
     }
     
     @ViewBuilder

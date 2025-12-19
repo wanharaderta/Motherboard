@@ -29,7 +29,7 @@ final class AuthManager: ObservableObject {
         authStateListener = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             Task { @MainActor in
                 self?.currentUser = user
-                
+                self?.isLoggedIn = user != nil
                 // Remove existing user listener
                 self?.userListener?.remove()
                 self?.userListener = nil
@@ -51,7 +51,6 @@ final class AuthManager: ObservableObject {
                 switch result {
                 case .success(let userData):
                     self?.userData = userData
-                    self?.isLoggedIn = userData != nil
                 case .failure(let error):
                     print("❌ Error listening to user data: \(error.localizedDescription)")
                 }

@@ -22,6 +22,12 @@ enum FirestoreCollection {
     case users
     case usersByID(userID: String)
     case kids(userID: String)
+    case allergy(userID: String)
+    case medicalCondition(userID: String)
+    case medications(userID: String)
+    case emergencyMedication(userID: String)
+    case specialistInfo(userID: String)
+    case routines(userID: String)
     
     /// Use this property when passing to Firestore APIs
     var path: String {
@@ -32,6 +38,18 @@ enum FirestoreCollection {
             return "users/\(userID)"
         case .kids(let userID):
             return "users/\(userID)/kids"
+        case .allergy(let userID):
+            return "users/\(userID)/allergy"
+        case .medicalCondition(let userID):
+            return "users/\(userID)/medicalCondition"
+        case .medications(let userID):
+            return "users/\(userID)/medications"
+        case .emergencyMedication(let userID):
+            return "users/\(userID)/emergencyMedication"
+        case .specialistInfo(let userID):
+            return "users/\(userID)/specialistInfo"
+        case .routines(let userID):
+            return "users/\(userID)/routines"
         }
     }
 }
@@ -101,6 +119,22 @@ class FirestoreService {
         return ref.documentID
     }
     
+    /// Completion-based variant
+    func addDocument<T: Encodable>(
+        collection: String,
+        data: T,
+        completion: @escaping (Result<String, Error>) -> Void
+    ) {
+        Task {
+            do {
+                let id = try await addDocument(collection: collection, data: data)
+                completion(.success(id))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+    
     // MARK: - Set/Upsert Document with Known ID
     func setDocument<T: Encodable>(
         collection: String,
@@ -110,6 +144,29 @@ class FirestoreService {
     ) async throws {
         let encoded = try Firestore.Encoder().encode(data)
         try await db.collection(collection).document(documentID).setData(encoded, merge: merge)
+    }
+    
+    /// Completion-based variant
+    func setDocument<T: Encodable>(
+        collection: String,
+        documentID: String,
+        data: T,
+        merge: Bool = true,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        Task {
+            do {
+                try await setDocument(
+                    collection: collection,
+                    documentID: documentID,
+                    data: data,
+                    merge: merge
+                )
+                completion(.success(()))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
     
     // MARK: - Get Document
@@ -127,5 +184,56 @@ class FirestoreService {
             )
         }
         return try doc.data(as: type)
+    }
+    
+    /// Completion-based variant
+    func getDocument<T: Decodable>(
+        collection: String,
+        documentID: String,
+        as type: T.Type,
+        completion: @escaping (Result<T, Error>) -> Void
+    ) {
+        Task {
+            do {
+                let model = try await getDocument(
+                    collection: collection,
+                    documentID: documentID,
+                    as: type
+                )
+                completion(.success(model))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+    }
+    
+    // MARK: - Update Document
+    func updateDocument(
+        collection: String,
+        documentID: String,
+        fields: [String: Any]
+    ) async throws {
+        try await db.collection(collection).document(documentID).updateData(fields)
+    }
+    
+    /// Completion-based variant
+    func updateDocument(
+        collection: String,
+        documentID: String,
+        fields: [String: Any],
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) {
+        Task {
+            do {
+                try await updateDocument(
+                    collection: collection,
+                    documentID: documentID,
+                    fields: fields
+                )
+                completion(.success(()))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 }

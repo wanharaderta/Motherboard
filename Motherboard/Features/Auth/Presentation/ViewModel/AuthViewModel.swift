@@ -1,8 +1,8 @@
 //
-//  RegisterViewModel.swift
+//  AuthViewModel.swift
 //  Motherboard
 //
-//  Created by Wanhar on 10/12/25.
+//  Created by Wanhar on 19/12/25.
 //
 
 import Foundation
@@ -10,16 +10,63 @@ import FirebaseAuth
 
 @MainActor
 @Observable
-class RegisterViewModel: BaseViewModel {
+class AuthViewModel: BaseViewModel {
     
     // MARK: - Properties
-    var fullName: String = ""
+    
+    // Login & Forgot Password
     var email: String = ""
     var password: String = ""
+    
+    // Register
+    var fullName: String = ""
     var confirmPassword: String = ""
+    
     private let userRepository: UserRepository = UserRepositoryImpl()
     
-    // MARK: - Register With Email
+    // MARK: - Login Methods
+    
+    /// Sign in with email and password
+    func signIn() async {
+        guard !email.isEmpty, !password.isEmpty else {
+            errorMessage = Constants.fillAllFields
+            isError = true
+            return
+        }
+        
+        guard isValidEmail(email) else {
+            errorMessage = Constants.validEmail
+            isError = true
+            return
+        }
+        
+        errorMessage = nil
+        isError = false
+        
+        await withLoading {
+            do {
+                _ = try await AuthManager.shared.signIn(email: email, password: password)
+                isSuccess = true
+                
+                // Send login success notification using NotificationManager
+                NotificationManager.shared.post(
+                    .didLogin,
+                    userInfo: [AppNotificationKey.isLogin.rawValue: true]
+                )
+                
+                print("✅ Login successful")
+            } catch {
+                let authError = AuthError.from(error)
+                errorMessage = authError.errorDescription
+                isError = true
+                print("❌ Error login: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    // MARK: - Register Methods
+    
+    /// Register with email and password
     func signUpWithEmail() async {
         guard !fullName.isEmpty, !email.isEmpty, !password.isEmpty, !confirmPassword.isEmpty else {
             errorMessage = Constants.fillAllFields
@@ -70,7 +117,7 @@ class RegisterViewModel: BaseViewModel {
         }
     }
     
-    // MARK: - Register With Google
+    /// Register with Google
     func signUpWithGoogle() async {
         errorMessage = nil
         isError = false
@@ -95,15 +142,48 @@ class RegisterViewModel: BaseViewModel {
             }
         }
     }
+    
+    // MARK: - Forgot Password Methods
+    
+    /// Send password reset email
+    func resetPassword() async {
+        guard !email.isEmpty else {
+            errorMessage = Constants.fillAllFields
+            isError = true
+            return
+        }
+        
+        guard isValidEmail(email) else {
+            errorMessage = Constants.validEmail
+            isError = true
+            return
+        }
+        
+        errorMessage = nil
+        isError = false
+        
+        await withLoading {
+            do {
+                try await AuthManager.shared.resetPassword(email: email)
+                isSuccess = true
+                print("✅ Password reset email sent successfully")
+            } catch {
+                let authError = AuthError.from(error)
+                errorMessage = authError.errorDescription
+                isError = true
+                print("❌ Error sending password reset: \(error.localizedDescription)")
+            }
+        }
+    }
 }
 
 // MARK: - Helpers
-extension RegisterViewModel {
+extension AuthViewModel {
     /// Persist user profile to Firestore via repository
     private func saveUserDocument(for user: User) async throws {
         guard let uid = user.uid as String?, !uid.isEmpty,
               let request = buildUserRequest(from: user) else {
-            throw NSError(domain: "RegisterViewModel", code: -1, userInfo: [NSLocalizedDescriptionKey: "Missing user data"])
+            throw NSError(domain: "AuthViewModel", code: -1, userInfo: [NSLocalizedDescriptionKey: "Missing user data"])
         }
         try await userRepository.addUser(userID: uid, user: request)
     }
@@ -136,5 +216,3 @@ extension RegisterViewModel {
         return emailPredicate.evaluate(with: email)
     }
 }
-
-

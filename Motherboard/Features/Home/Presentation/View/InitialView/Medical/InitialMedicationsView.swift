@@ -13,7 +13,7 @@ import UIKit
 struct InitialMedicationsView: View {
     
     // MARK: - Properties
-    @Environment(InitialViewModel.self) private var initialViewModel
+    @Environment(InitialViewModel.self) private var viewModel
     
     @FocusState private var focusedField: Field?
     @State private var selectedPhoto: PhotosPickerItem?
@@ -47,12 +47,17 @@ struct InitialMedicationsView: View {
             .padding([.top, .horizontal], Spacing.xl)
         }
         .background(Color.white.ignoresSafeArea())
-        .alert(Constants.error, isPresented: Binding(get: { initialViewModel.isError }, set: { if !$0 { initialViewModel.clearError() } })) {
+        .alert(Constants.error, isPresented: Binding(get: { viewModel.isError }, set: { if !$0 { viewModel.clearError() } })) {
             Button(Constants.ok) {
-                initialViewModel.clearError()
+                viewModel.clearError()
             }
         } message: {
-            Text(initialViewModel.errorMessage ?? Constants.errorOccurred)
+            Text(viewModel.errorMessage ?? Constants.errorOccurred)
+        }
+        .onAppear {
+            if let existingImage = viewModel.medicationRequest.medicationImage {
+                selectedImage = existingImage
+            }
         }
         .onChange(of: selectedPhoto) { _, newValue in
             Task {
@@ -60,16 +65,17 @@ struct InitialMedicationsView: View {
                     if let data = try? await newValue.loadTransferable(type: Data.self),
                        let image = UIImage(data: data) {
                         selectedImage = image
-                        initialViewModel.medicationImage = image
+                        viewModel.medicationRequest.medicationImage = image
                     }
                 } else {
                     selectedImage = nil
-                    initialViewModel.medicationImage = nil
+                    viewModel.medicationRequest.medicationImage = nil
                 }
             }
         }
     }
     
+    // MARK: - Header View
     private var headerView: some View {
         Text(Constants.medications)
             .appFont(name: .montserrat, weight: .semibold, size: FontSize.title16)
@@ -77,7 +83,7 @@ struct InitialMedicationsView: View {
             .padding(.top, -Spacing.s)
     }
     
-    // MARK: - Medications Section
+    // MARK: - Content View
     private var contentView: some View {
         VStack(alignment: .leading, spacing: Spacing.l) {
             medicationNameField
@@ -93,13 +99,19 @@ struct InitialMedicationsView: View {
         .background(Color.green50)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
-    
+}
+
+// MARK: - Item View
+extension InitialMedicationsView {
     // MARK: - Medication Name Field
     private var medicationNameField: some View {
         LabeledInputField(
             label: Constants.medicationName,
             placeholder: Constants.placeholder,
-            text: Binding(get: { initialViewModel.medicationName }, set: { initialViewModel.medicationName = $0 }),
+            text: Binding(
+                get: { viewModel.medicationRequest.medicationName ?? "" },
+                set: { viewModel.medicationRequest.medicationName = $0 }
+            ),
             labelColor: Color.black300,
             bgPlaceholderColor: Color.green50,
             field: .medicationName,
@@ -111,7 +123,10 @@ struct InitialMedicationsView: View {
     private var doseField: some View {
         MenuField(
             label: Constants.dose,
-            selectedValue: Binding(get: { initialViewModel.dose }, set: { initialViewModel.dose = $0 }),
+            selectedValue: Binding(
+                get: { viewModel.medicationRequest.dose ?? .mgML },
+                set: { viewModel.medicationRequest.dose = $0 }
+            ),
             field: Field.dose,
             focus: $focusedField
         )
@@ -121,7 +136,10 @@ struct InitialMedicationsView: View {
     private var routeField: some View {
         MenuField(
             label: Constants.route,
-            selectedValue: Binding(get: { initialViewModel.route }, set: { initialViewModel.route = $0 }),
+            selectedValue: Binding(
+                get: { viewModel.medicationRequest.route ?? .oral },
+                set: { viewModel.medicationRequest.route = $0 }
+            ),
             field: Field.route,
             focus: $focusedField
         )
@@ -131,7 +149,10 @@ struct InitialMedicationsView: View {
     private var frequencyField: some View {
         MenuField(
             label: Constants.frequency,
-            selectedValue: Binding(get: { initialViewModel.frequency }, set: { initialViewModel.frequency = $0 }),
+            selectedValue: Binding(
+                get: { viewModel.medicationRequest.frequency ?? .daily },
+                set: { viewModel.medicationRequest.frequency = $0 }
+            ),
             field: Field.frequency,
             focus: $focusedField
         )
@@ -144,7 +165,7 @@ struct InitialMedicationsView: View {
                 .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
                 .foregroundColor(Color.black300)
             
-            TextField(Constants.enterTimeframe, text: .constant(initialViewModel.timeSchedule.isEmpty ? "" : initialViewModel.timeSchedule))
+            TextField(Constants.enterTimeframe, text: .constant((viewModel.medicationRequest.timeSchedule ?? "").isEmpty ? "" : (viewModel.medicationRequest.timeSchedule ?? "")))
                 .textFieldStyle(.plain)
                 .disabled(true)
                 .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
@@ -157,6 +178,9 @@ struct InitialMedicationsView: View {
                 )
                 .onTapGesture {
                     focusedField = .timeSchedule
+                    if let dateString = viewModel.medicationRequest.timeSchedule, !dateString.isEmpty {
+                        selectedTimeSchedule = Date.parseDate(from: dateString) ?? Date()
+                    }
                     showTimeSchedulePicker.toggle()
                 }
                 .sheet(isPresented: $showTimeSchedulePicker) {
@@ -167,7 +191,7 @@ struct InitialMedicationsView: View {
                             .padding()
                         
                         Button(Constants.done) {
-                            initialViewModel.timeSchedule = selectedTimeSchedule.formatDate()
+                            viewModel.medicationRequest.timeSchedule = selectedTimeSchedule.formatDate()
                             showTimeSchedulePicker = false
                         }
                         .padding()
@@ -184,7 +208,7 @@ struct InitialMedicationsView: View {
                 .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
                 .foregroundColor(Color.mineShaftOpacity86)
             
-            TextField(Constants.kindlyProvideInformationOnStartDate, text: .constant(initialViewModel.medicationStartDate.isEmpty ? "" : initialViewModel.medicationStartDate))
+            TextField(Constants.kindlyProvideInformationOnStartDate, text: .constant((viewModel.medicationRequest.medicationStartDate ?? "").isEmpty ? "" : (viewModel.medicationRequest.medicationStartDate ?? "")))
                 .textFieldStyle(.plain)
                 .disabled(true)
                 .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
@@ -197,6 +221,9 @@ struct InitialMedicationsView: View {
                 )
                 .onTapGesture {
                     focusedField = .startDate
+                    if let dateString = viewModel.medicationRequest.medicationStartDate, !dateString.isEmpty {
+                        selectedStartDate = Date.parseDate(from: dateString) ?? Date()
+                    }
                     showStartDatePicker.toggle()
                 }
                 .sheet(isPresented: $showStartDatePicker) {
@@ -207,7 +234,7 @@ struct InitialMedicationsView: View {
                             .padding()
                         
                         Button(Constants.done) {
-                            initialViewModel.medicationStartDate = selectedStartDate.formatDate()
+                            viewModel.medicationRequest.medicationStartDate = selectedStartDate.formatDate()
                             showStartDatePicker = false
                         }
                         .padding()
@@ -224,7 +251,7 @@ struct InitialMedicationsView: View {
                 .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
                 .foregroundColor(Color.mineShaftOpacity86)
             
-            TextField(Constants.kindlyProvideInformationOnStartDate, text: .constant(initialViewModel.medicationEndDate.isEmpty ? "" : initialViewModel.medicationEndDate))
+            TextField(Constants.kindlyProvideInformationOnStartDate, text: .constant((viewModel.medicationRequest.medicationEndDate ?? "").isEmpty ? "" : (viewModel.medicationRequest.medicationEndDate ?? "")))
                 .textFieldStyle(.plain)
                 .disabled(true)
                 .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
@@ -237,6 +264,9 @@ struct InitialMedicationsView: View {
                 )
                 .onTapGesture {
                     focusedField = .endDate
+                    if let dateString = viewModel.medicationRequest.medicationEndDate, !dateString.isEmpty {
+                        selectedEndDate = Date.parseDate(from: dateString) ?? Date()
+                    }
                     showEndDatePicker.toggle()
                 }
                 .sheet(isPresented: $showEndDatePicker) {
@@ -247,7 +277,7 @@ struct InitialMedicationsView: View {
                             .padding()
                         
                         Button(Constants.done) {
-                            initialViewModel.medicationEndDate = selectedEndDate.formatDate()
+                            viewModel.medicationRequest.medicationEndDate = selectedEndDate.formatDate()
                             showEndDatePicker = false
                         }
                         .padding()
@@ -264,7 +294,10 @@ struct InitialMedicationsView: View {
                 .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
                 .foregroundColor(Color.mineShaftOpacity86)
             
-            TextEditor(text: Binding(get: { initialViewModel.doctorsNote }, set: { initialViewModel.doctorsNote = $0 }))
+            TextEditor(text: Binding(
+                get: { viewModel.medicationRequest.doctorsNote ?? "" },
+                set: { viewModel.medicationRequest.doctorsNote = $0 }
+            ))
                 .frame(minHeight: 100)
                 .scrollContentBackground(.hidden)
                 .padding(Spacing.m)
@@ -276,14 +309,13 @@ struct InitialMedicationsView: View {
                 )
                 .overlay(
                     Group {
-                        if initialViewModel.doctorsNote.isEmpty {
+                        if (viewModel.medicationRequest.doctorsNote ?? "").isEmpty {
                             VStack {
                                 HStack {
                                     Text(Constants.provideInformationOnDoctorsNote)
                                         .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
-                                        .foregroundColor(Color.mineShaftOpacity86)
-                                        .padding(.leading, Spacing.m + 4)
-                                        .padding(.top, Spacing.m + 8)
+                                        .foregroundColor(Color.mainGray)
+                                        .padding(Spacing.m)
                                     Spacer()
                                 }
                                 Spacer()
@@ -357,32 +389,38 @@ struct InitialMedicationsView: View {
         }
     }
     
-    // MARK: - Continue Button
     private var continueButton: some View {
         Button(action: {
-            handleContinue()
+            focusedField = nil
+            onContinue?()
         }) {
             Text(Constants.continueString)
                 .appFont(name: .montserrat, weight: .semibold, size: FontSize.title14)
-                .foregroundColor(Color.green500)
+                .foregroundColor(isFormValid ? Color.white : Color.green500)
                 .frame(maxWidth: .infinity)
                 .frame(height: 50)
-                .background(Color.white)
+                .background(isFormValid ? Color.primaryGreen900 : Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(Color.green500, lineWidth: 1)
+                        .stroke(
+                            isFormValid ? Color.white : Color.green500,
+                            lineWidth: 1
+                        )
                 )
         }
+        .disabled(!isFormValid)
         .padding(.vertical, Spacing.xl)
     }
-    
 }
 
 // MARK: - Helper Methods
 extension InitialMedicationsView {
-    private func handleContinue() {
-        // All fields are optional for medications, so we can always continue
-        onContinue?()
+    
+    private var isFormValid: Bool {
+        let medicationName = (viewModel.medicationRequest.medicationName ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        return !medicationName.isEmpty
     }
 }

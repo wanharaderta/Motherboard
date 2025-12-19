@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "bgBottomScreen.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

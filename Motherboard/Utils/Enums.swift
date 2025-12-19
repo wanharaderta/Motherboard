@@ -70,10 +70,10 @@ enum UserRoleModel: Int, CaseIterable {
 }
 
 // MARK: - Allergy Severity Enum
-enum AllergySeverity: Int, Codable, CaseIterable {
-    case mild = 0
-    case moderate = 1
-    case severe = 2
+enum AllergySeverity: String, Codable, CaseIterable {
+    case mild
+    case moderate
+    case severe
     
     var displayName: String {
         switch self {
@@ -103,12 +103,12 @@ enum Ongoing: Int, Codable, CaseIterable {
 }
 
 // MARK: - Medication Dose Enum
-enum MedicationDose: Int, Codable, CaseIterable {
-    case mgML = 0
-    case mg = 1
-    case mL = 2
-    case g = 3
-    case units = 4
+enum MedicationDose: String, Codable, CaseIterable {
+    case mgML = "mg_ml"
+    case mg = "mg"
+    case mL = "ml"
+    case g = "g"
+    case units = "units"
     
     var displayName: String {
         switch self {
@@ -127,14 +127,14 @@ enum MedicationDose: Int, Codable, CaseIterable {
 }
 
 // MARK: - Medication Route Enum
-enum MedicationRoute: Int, Codable, CaseIterable {
-    case oral = 0
-    case intravenous = 1
-    case intramuscular = 2
-    case subcutaneous = 3
-    case topical = 4
-    case nasal = 5
-    case ophthalmic = 6
+enum MedicationRoute: String, Codable, CaseIterable {
+    case oral
+    case intravenous
+    case intramuscular
+    case subcutaneous
+    case topical
+    case nasal
+    case ophthalmic
     
     var displayName: String {
         switch self {
@@ -157,13 +157,13 @@ enum MedicationRoute: Int, Codable, CaseIterable {
 }
 
 // MARK: - Medication Frequency Enum
-enum MedicationFrequency: Int, Codable, CaseIterable {
-    case daily = 0
-    case twiceDaily = 1
-    case threeTimesDaily = 2
-    case fourTimesDaily = 3
-    case weekly = 4
-    case asNeeded = 5
+enum MedicationFrequency: String, Codable, CaseIterable {
+    case daily = "daily"
+    case twiceDaily = "twice_daily"
+    case threeTimesDaily = "three_times_daily"
+    case fourTimesDaily = "four_times_daily"
+    case weekly  = "weekly"
+    case asNeeded = "as_needed"
     
     var displayName: String {
         switch self {

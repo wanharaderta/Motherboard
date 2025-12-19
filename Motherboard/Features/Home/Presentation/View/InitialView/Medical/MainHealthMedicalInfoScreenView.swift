@@ -86,13 +86,30 @@ struct MainHealthMedicalInfoScreenView: View {
     }
     
     private var contentView: some View {
-        TabView(selection: $selectedTab) {
-            ForEach(0..<totalScreens, id: \.self) { index in
-                viewForIndex(index)
-                    .tag(index)
+        GeometryReader { geometry in
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 0) {
+                        ForEach(0..<totalScreens, id: \.self) { index in
+                            viewForIndex(index)
+                                .frame(width: geometry.size.width)
+                                .id(index)
+                        }
+                    }
+                }
+                .scrollTargetBehavior(.paging)
+                .scrollDisabled(true) // Disable user scrolling - only allow programmatic navigation
+                .onChange(of: selectedTab) { oldValue, newValue in
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        proxy.scrollTo(newValue, anchor: .leading)
+                    }
+                }
+                .onAppear {
+                    // Scroll to initial position
+                    proxy.scrollTo(selectedTab, anchor: .leading)
+                }
             }
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
     }
     
     @ViewBuilder
@@ -119,7 +136,7 @@ struct MainHealthMedicalInfoScreenView: View {
                 onSkip: { onSkip?() }
             )
         case 4:
-            InitialSpecialistInformationView(
+            InitialInformationView(
                 onContinue: { nextTab() },
                 onSkip: { onSkip?() }
             )
@@ -162,9 +179,8 @@ extension MainHealthMedicalInfoScreenView {
             return
         }
         
-        // Small delay to ensure update happens after current render cycle
-        Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
+        // Direct update - ScrollViewReader will handle animation
+        withAnimation(.easeInOut(duration: 0.3)) {
             selectedTab += 1
         }
     }
@@ -174,9 +190,8 @@ extension MainHealthMedicalInfoScreenView {
     /// - Otherwise, go to previous tab.
     private func handleBack() {
         if selectedTab > 0 {
-            // Use same approach as nextTab() to ensure TabView updates properly
-            Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
+            // Direct update - ScrollViewReader will handle animation
+            withAnimation(.easeInOut(duration: 0.3)) {
                 selectedTab -= 1
             }
         } else {

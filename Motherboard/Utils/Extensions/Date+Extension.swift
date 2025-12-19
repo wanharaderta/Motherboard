@@ -31,4 +31,13 @@ extension Date {
         formatter.dateFormat = "MM/dd/yyyy"
         return formatter.string(from: self)
     }
+    
+    /// Parse date string from MM/dd/yyyy format to Date
+    /// - Parameter dateString: Date string in MM/dd/yyyy format
+    /// - Returns: Date object if parsing succeeds, nil otherwise
+    static func parseDate(from dateString: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd/yyyy"
+        return formatter.date(from: dateString)
+    }
 }

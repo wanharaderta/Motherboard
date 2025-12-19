@@ -15,8 +15,6 @@ struct ItemRoutinesCellView: View {
     let routine: RoutineType
     @Binding var selectedRoutines: Set<RoutineType>
     
-    // MARK: - Body
-    
     var body: some View {
         Button(action: {
             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
@@ -43,12 +41,12 @@ struct ItemRoutinesCellView: View {
                 // Text Content
                 VStack(alignment: .leading, spacing: Spacing.xxs) {
                     Text(routine.title)
-                        .appFont(name: .montserrat, weight: .semibold, size: FontSize.title14)
-                        .foregroundColor(Color.black300)
+                        .appFont(name: .montserrat, weight: .semibold, size: FontSize.title16)
+                        .foregroundColor(Color.mineShaft.opacity(0.8))
                     
                     Text(routine.description)
                         .appFont(name: .montserrat, weight: .reguler, size: FontSize.title12)
-                        .foregroundColor(Color.grey500)
+                        .foregroundColor(Color.mineShaft.opacity(0.6))
                 }
                 
                 Spacer()
@@ -75,7 +73,7 @@ struct ItemRoutinesCellView: View {
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(
-                        selectedRoutines.contains(routine) ? Color.green500 : Color.borderNeutralWhite,
+                        selectedRoutines.contains(routine) ? Color.primaryGreen900 : Color.green500,
                         lineWidth: 1
                     )
             )

@@ -15,7 +15,7 @@ struct InitialAllergiesView: View {
     var onContinue: (() -> Void)?
     var onSkip: (() -> Void)?
     
-    @Environment(InitialViewModel.self) private var initialViewModel
+    @Environment(InitialViewModel.self) private var viewModel
     @FocusState private var focusedField: Field?
     
     // MARK: - Enums
@@ -36,12 +36,12 @@ struct InitialAllergiesView: View {
             .padding([.top, .horizontal], Spacing.xl)
         }
         .background(Color.white.ignoresSafeArea())
-        .alert(Constants.error, isPresented: Binding(get: { initialViewModel.isError }, set: { if !$0 { initialViewModel.clearError() } })) {
+        .alert(Constants.error, isPresented: Binding(get: { viewModel.isError }, set: { if !$0 { viewModel.clearError() } })) {
             Button(Constants.ok) {
-                initialViewModel.clearError()
+                viewModel.clearError()
             }
         } message: {
-            Text(initialViewModel.errorMessage ?? Constants.errorOccurred)
+            Text(viewModel.errorMessage ?? Constants.errorOccurred)
         }
     }
     
@@ -49,7 +49,7 @@ struct InitialAllergiesView: View {
         Text(Constants.allergies)
             .appFont(name: .montserrat, weight: .semibold, size: FontSize.title16)
             .foregroundColor(Color.codGreyText)
-           // .padding(.top, Spacing.s)
+            .padding(.top, -Spacing.s)
     }
     
     // MARK: - Allergies Section
@@ -72,9 +72,10 @@ struct InitialAllergiesView: View {
             label: Constants.allergyName,
             placeholder: Constants.placeholder,
             text: Binding(
-                get: { initialViewModel.allergyRequest.allergyName ?? "" },
-                set: { initialViewModel.allergyRequest.allergyName = $0 }
+                get: { viewModel.allergyRequest.allergyName ?? "" },
+                set: { viewModel.allergyRequest.allergyName = $0 }
             ),
+            labelColor: Color.black300,
             textPlaceholderColor: Color.mainGray,
             bgPlaceholderColor: Color.green50,
             field: .allergyName,
@@ -84,47 +85,17 @@ struct InitialAllergiesView: View {
     
     // MARK: - Severity Field
     private var severityField: some View {
-        VStack(alignment: .leading, spacing: Spacing.xs) {
-            Text(Constants.severity)
-                .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
-                .foregroundColor(Color.mineShaftOpacity86)
-            
-            Menu {
-                ForEach(AllergySeverity.allCases, id: \.self) { severityOption in
-                    Button(action: {
-                        initialViewModel.allergyRequest.severity = severityOption
-                    }) {
-                        HStack {
-                            Text(severityOption.displayName)
-                            
-                            if initialViewModel.allergyRequest.severity == severityOption {
-                                Image(systemName: "checkmark")
-                            }
-                        }
-                    }
-                }
-            } label: {
-                HStack {
-                    Text((initialViewModel.allergyRequest.severity ?? .mild).displayName)
-                        .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
-                        .foregroundColor(Color.tundora)
-                    Spacer()
-                    Image(systemName: "chevron.down")
-                        .foregroundColor(Color.tundora)
-                        .font(.system(size: 12, weight: .medium))
-                }
-                .padding(Spacing.m)
-                .background(Color.green50)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(focusedField == .severity ? Color.green200 : Color.borderNeutralWhite, lineWidth: 1)
-                )
-            }
-            .onTapGesture {
-                focusedField = .severity
-            }
-        }
+        MenuField(
+            label: Constants.severity,
+            selectedValue: Binding(
+                get: { viewModel.allergyRequest.severity ?? .mild },
+                set: { viewModel.allergyRequest.severity = $0 }
+            ),
+            field: Field.severity,
+            focus: $focusedField,
+            labelColor: Color.mineShaftOpacity86,
+            backgroundColor: Color.green50
+        )
     }
     
     // MARK: - Trigger Details Field
@@ -136,8 +107,8 @@ struct InitialAllergiesView: View {
             
             TextEditor(
                 text: Binding(
-                    get: { initialViewModel.allergyRequest.triggerDetails ?? "" },
-                    set: { initialViewModel.allergyRequest.triggerDetails = $0 }
+                    get: { viewModel.allergyRequest.triggerDetails ?? "" },
+                    set: { viewModel.allergyRequest.triggerDetails = $0 }
                 )
             )
                 .frame(minHeight: 100)
@@ -152,7 +123,7 @@ struct InitialAllergiesView: View {
                 )
                 .overlay(
                     Group {
-                        if (initialViewModel.allergyRequest.triggerDetails ?? "").isEmpty {
+                        if (viewModel.allergyRequest.triggerDetails ?? "").isEmpty {
                             VStack {
                                 HStack {
                                     Text(Constants.typeInformationOnTriggerDetails)
@@ -181,8 +152,8 @@ struct InitialAllergiesView: View {
             
             TextEditor(
                 text: Binding(
-                    get: { initialViewModel.allergyRequest.reactionDescription ?? "" },
-                    set: { initialViewModel.allergyRequest.reactionDescription = $0 }
+                    get: { viewModel.allergyRequest.reactionDescription ?? "" },
+                    set: { viewModel.allergyRequest.reactionDescription = $0 }
                 )
             )
                 .frame(minHeight: 100)
@@ -197,7 +168,7 @@ struct InitialAllergiesView: View {
                 )
                 .overlay(
                     Group {
-                        if (initialViewModel.allergyRequest.reactionDescription ?? "").isEmpty {
+                        if (viewModel.allergyRequest.reactionDescription ?? "").isEmpty {
                             VStack {
                                 HStack {
                                     Text(Constants.typeInformationOnReactionDescription)
@@ -226,8 +197,8 @@ struct InitialAllergiesView: View {
             
             TextEditor(
                 text: Binding(
-                    get: { initialViewModel.allergyRequest.specificInstructions ?? "" },
-                    set: { initialViewModel.allergyRequest.specificInstructions = $0 }
+                    get: { viewModel.allergyRequest.specificInstructions ?? "" },
+                    set: { viewModel.allergyRequest.specificInstructions = $0 }
                 )
             )
                 .frame(minHeight: 100)
@@ -242,7 +213,7 @@ struct InitialAllergiesView: View {
                 )
                 .overlay(
                     Group {
-                        if (initialViewModel.allergyRequest.specificInstructions ?? "").isEmpty {
+                        if (viewModel.allergyRequest.specificInstructions ?? "").isEmpty {
                             VStack {
                                 HStack {
                                     Text(Constants.exampleInstructions)
@@ -265,7 +236,6 @@ struct InitialAllergiesView: View {
     // MARK: - Continue Button
     private var continueButton: some View {
         Button(action: {
-            // Dismiss keyboard before navigation
             focusedField = nil
             onContinue?()
         }) {
@@ -294,13 +264,13 @@ struct InitialAllergiesView: View {
 extension InitialAllergiesView {
     
     private var isFormValid: Bool {
-            let name = (initialViewModel.allergyRequest.allergyName ?? "")
+            let name = (viewModel.allergyRequest.allergyName ?? "")
                 .trimmingCharacters(in: .whitespacesAndNewlines)
-            let trigger = (initialViewModel.allergyRequest.triggerDetails ?? "")
+            let trigger = (viewModel.allergyRequest.triggerDetails ?? "")
                 .trimmingCharacters(in: .whitespacesAndNewlines)
-            let reaction = (initialViewModel.allergyRequest.reactionDescription ?? "")
+            let reaction = (viewModel.allergyRequest.reactionDescription ?? "")
                 .trimmingCharacters(in: .whitespacesAndNewlines)
-            let instructions = (initialViewModel.allergyRequest.specificInstructions ?? "")
+            let instructions = (viewModel.allergyRequest.specificInstructions ?? "")
                 .trimmingCharacters(in: .whitespacesAndNewlines)
             
             return !name.isEmpty &&

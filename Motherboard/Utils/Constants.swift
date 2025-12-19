@@ -138,7 +138,7 @@ struct Constants {
     static let call911 = "e.g, call 911, etc."
     static let enterLinkURL = "Enter link URL"
     static let kindlyProvideDoctorsContact = "Kindly provide doctors contact"
-    
+
     static let pediatricianSpecialistInformation = "Pediatrician / Specialist Information"
     static let doctorName = "Doctor name"
     static let practiceName = "Practice name"
@@ -146,17 +146,16 @@ struct Constants {
     static let address = "Address"
     static let portalLinkOptional = "Portal link (optional)*"
     
-    static let routines = "Routines"
     static let bottlesAndMeals = "Bottles & Meals"
-    static let bottlesAndMealsDescription = "Feeding times, bottles, meal reminders"
-    static let medicationsRoutine = "Medications"
-    static let medicationsRoutineDescription = "Schedule doses and reminders"
-    static let diapers = "Diapers"
-    static let diapersDescription = "Track diapers changes"
     static let breastfeedingAndPumping = "Breastfeeding & Pumping"
+    static let routines = "Routines"
+    static let bottlesAndMealsDescription = "Feeding times, bottles, meal reminders"
+    static let medicationsRoutineDescription = "Schedule doses and reminders"
+    static let diapersDescription = "Track diapers changes"
     static let breastfeedingAndPumpingDescription = "Manage breastfeeding sessions & pumping cycles"
     static let createACustomRoutine = "Create a custom routine"
     static let proceed = "Proceed"
+    static let diapers = "Diapers"
     static let chooseTheRoutinesYouWantToSetUp = "Choose the routines you want to set up"
     static let youCanSelectOneOrMultipleRoutines = "You can select one or multiple routines."
     
@@ -164,6 +163,21 @@ struct Constants {
     static let skip = "Skip"
     static let next = "Next"
     static let alreadyHaveAnAccount = "Already have an account?"
+    static let dontHaveAnAccountYet = "Don’t have an account yet?"
     static let logIn = "Log In"
+    static let signUpHere = "Sign Up here"
     static let continueString = "Continue"
+    static let forgotPassword = "Forgot password?"
+    static let resetYourPassword = "Reset your password"
+    static let enterEmailAssociatedWithAccount = "Enter the email associated with your account."
+    static let resetPassword = "Reset Password"
+    static let success = "Success"
+    
+    // MARK: - Message
+    static let kidIDNotAvailable = "Kid ID is not available"
+    static let pleaseSelectARole = "Please select a role"
+    static let welcomeBack = "Welcome Back"
+    static let accessYourDashboardAndRoutines = "Access your dashboard and routines."
+    static let orContinueWith = "Or continue with"
+    static let passwordResetEmailHasBeenSent = "Password reset email has been sent. Please check your inbox."
 }

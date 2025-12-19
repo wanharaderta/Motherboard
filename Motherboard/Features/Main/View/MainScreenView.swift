@@ -48,6 +48,8 @@ struct MainScreenView: View {
                     RegisterScreenView()
                 case .login:
                     LoginScreenView()
+                case .forgotPassword:
+                    ForgotPasswordScreenView()
                 case .home:
                     HomeScreenView()
                 }

@@ -56,6 +56,7 @@ struct InitialUserRoleScreenView: View {
                     selectedRole: viewModel.selectedRole,
                     onSelect: { selectedRole in
                         viewModel.selectedRole = selectedRole
+                        print("ffff \(viewModel.selectedRole?.rawValue)")
                     }
                 )
             }
@@ -67,7 +68,7 @@ struct InitialUserRoleScreenView: View {
 extension InitialUserRoleScreenView {
     private var continueButton: some View {
         Button(action: {
-            guard let role = viewModel.selectedRole else { return }
+            guard viewModel.selectedRole != nil else { return }
             navigationCoordinator.navigate(to: InitialRoute.addChild)
         }) {
             Text(Constants.continueString)

@@ -10,7 +10,7 @@ struct KidModelRequest: Codable {
     var fullname: String?
     var nickname: String?
     var dob: Date?
-    var gender: Gender?
+    var gender: Gender = .male
     var photoUrl: String?
     var notes: String?
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RegisterScreenView: View {
     
-    @State private var viewModel = RegisterViewModel()
+    @State private var viewModel = AuthViewModel()
     @Environment(NavigationCoordinator.self) private var navigationCoordinator
     @FocusState private var focusedField: Field?
     
@@ -188,7 +188,7 @@ struct RegisterScreenView: View {
                 .foregroundColor(Color.mineShaftOpacity86)
             
             Button(action: {
-              //
+                navigationCoordinator.navigate(to: AppRoute.login)
             }) {
                 Text(Constants.logIn)
                     .appFont(name: .montserrat, weight: .medium, size: FontSize.title12)

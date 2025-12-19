@@ -23,11 +23,24 @@ enum RoutineType: String, CaseIterable, Identifiable {
         case .bottlesAndMeals:
             return Constants.bottlesAndMeals
         case .medications:
-            return Constants.medicationsRoutine
+            return Constants.medications
         case .diapers:
             return Constants.diapers
         case .breastfeedingAndPumping:
             return Constants.breastfeedingAndPumping
+        }
+    }
+    
+    var code: String {
+        switch self {
+        case .bottlesAndMeals:
+            return "bottles_meals"
+        case .medications:
+            return "medications"
+        case .diapers:
+            return "diapers"
+        case .breastfeedingAndPumping:
+            return "breastfeeding_pumping"
         }
     }
     
@@ -74,19 +87,15 @@ enum RoutineType: String, CaseIterable, Identifiable {
 struct InitialRoutinesView: View {
     
     // MARK: - Properties
-    @Environment(InitialViewModel.self) private var initialViewModel
+    @Environment(InitialViewModel.self) private var viewModel
+    @FocusState private var focusedField: Field?
     
     var onContinue: (() -> Void)?
     var onSkip: (() -> Void)?
-    @FocusState private var focusedField: Field?
-    
-    // MARK: - Enums
     
     enum Field {
         case none
     }
-    
-    // MARK: - Body
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -104,15 +113,14 @@ struct InitialRoutinesView: View {
     }
     
     // MARK: - Routines List
-    
     private var routinesList: some View {
         VStack(spacing: Spacing.m) {
             ForEach(RoutineType.allCases) { routine in
                 ItemRoutinesCellView(
                     routine: routine,
                     selectedRoutines: Binding(
-                        get: { initialViewModel.selectedRoutines },
-                        set: { initialViewModel.selectedRoutines = $0 }
+                        get: { viewModel.selectedRoutines },
+                        set: { viewModel.selectedRoutines = $0 }
                     )
                 )
             }
@@ -127,36 +135,36 @@ struct InitialRoutinesView: View {
         }) {
             HStack(spacing: Spacing.m) {
                 Image(systemName: "plus")
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(Color.black300)
-                    .frame(width: 20)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(Color.primaryGreen900)
                 
                 Text(Constants.createACustomRoutine)
-                    .appFont(name: .montserrat, weight: .semibold, size: FontSize.title14)
-                    .foregroundColor(Color.black300)
+                    .appFont(name: .montserrat, weight: .semibold, size: FontSize.title16)
+                    .foregroundColor(Color.mineShaft.opacity(0.8))
                 
                 Spacer()
                 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Color.grey500)
+                    .foregroundColor(Color.primaryGreen900)
             }
-            .padding(Spacing.m)
+            .padding(.horizontal, Spacing.m)
+            .frame(height: 66)
             .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.borderNeutralWhite, lineWidth: 1)
+                    .stroke(Color.green500, lineWidth: 1)
             )
         }
         .buttonStyle(PlainButtonStyle())
     }
     
-    // MARK: - Proceed Button
-    
     private var proceedButton: some View {
         Button(action: {
-            handleContinue()
+            Task {
+                await viewModel.addChild()
+            }
         }) {
             Text(Constants.proceed)
                 .appFont(name: .montserrat, weight: .semibold, size: FontSize.title14)
@@ -176,23 +184,12 @@ struct InitialRoutinesView: View {
         .disabled(!isFormValid)
         .padding(.vertical, Spacing.xl)
     }
-    
-    // MARK: - Computed Properties
-    
-    private var isFormValid: Bool {
-        !initialViewModel.selectedRoutines.isEmpty
-    }
-    
 }
 
 // MARK: - Helper Methods
 
 extension InitialRoutinesView {
-    private func handleContinue() {
-        guard isFormValid else {
-            return
-        }
-        
-        onContinue?()
+    private var isFormValid: Bool {
+        !viewModel.selectedRoutines.isEmpty
     }
 }

@@ -49,7 +49,7 @@ struct InitialAddChildScreenView: View {
             CameraPickerManager(selectedImage: $selectedImage)
                 .onChange(of: selectedImage) { _, newValue in
                     if let newValue = newValue {
-                        viewModel.handleCameraImage(newValue)
+                        handleCameraImage(newValue)
                     }
                 }
         }
@@ -60,12 +60,12 @@ struct InitialAddChildScreenView: View {
                        let image = UIImage(data: data) {
                         selectedImage = image
                         viewModel.childSelectedImage = image
-                        viewModel.childPhotoUrl = ""
+                        viewModel.childRequest.photoUrl = nil
                     }
                 } else {
                     selectedImage = nil
                     viewModel.childSelectedImage = nil
-                    viewModel.childPhotoUrl = ""
+                    viewModel.childRequest.photoUrl = nil
                 }
             }
         }
@@ -131,6 +131,7 @@ extension InitialAddChildScreenView {
                     get: { viewModel.childRequest.fullname ?? "" },
                     set: { viewModel.childRequest.fullname = $0 }
                 ),
+                labelColor: Color.black300,
                 textPlaceholderColor: Color.mainGray,
                 field: .childsName,
                 focus: $focusedField
@@ -207,7 +208,7 @@ extension InitialAddChildScreenView {
         MenuField(
             label: Constants.genderLabel,
             selectedValue: Binding(
-                get: { viewModel.childRequest.gender ?? .male },
+                get: { viewModel.childRequest.gender },
                 set: { viewModel.childRequest.gender = $0 }
             ),
             field: Field.gender,
@@ -236,7 +237,7 @@ extension InitialAddChildScreenView {
                         selectedPhoto = nil
                         selectedImage = nil
                         viewModel.childSelectedImage = nil
-                        viewModel.childPhotoUrl = ""
+                        viewModel.childRequest.photoUrl = nil
                     }) {
                         Text(Constants.removePhoto)
                             .appFont(name: .montserrat, weight: .medium, size: FontSize.title14)
@@ -324,12 +325,16 @@ extension InitialAddChildScreenView {
 extension InitialAddChildScreenView {
     // MARK: - Validation
     private var isFormValid: Bool {
+        validateChildData()
+    }
+    
+    private func validateChildData() -> Bool {
         let name = (viewModel.childRequest.fullname ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         return !name.isEmpty
     }
     
     private func validateForm() -> Bool {
-        if !isFormValid {
+        if !validateChildData() {
             viewModel.showError(message: Constants.pleaseEnterFullname)
             return false
         }
@@ -348,6 +353,11 @@ extension InitialAddChildScreenView {
     }
     
     // MARK: - Camera Handling
+    private func handleCameraImage(_ image: UIImage) {
+        viewModel.childSelectedImage = image
+        viewModel.childRequest.photoUrl = ""
+    }
+    
     private func openCamera() {
         guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
             viewModel.showError(message: "Camera is not available on this device")
