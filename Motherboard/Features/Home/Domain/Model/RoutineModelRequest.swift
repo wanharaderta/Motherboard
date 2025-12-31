@@ -2,7 +2,7 @@
 //  RoutineModelRequest.swift
 //  Motherboard
 //
-//  Created by AI on 18/12/25.
+//  Created by Wanhar on 18/12/25.
 //
 //
 
@@ -13,6 +13,21 @@ struct RoutineModelRequest: Codable {
     var title: String
     var description: String
     var kidID: String
+
+    var activityName: String?
+    var scheduledTime: String?
+    var instructions: String?
+
+    var quantitySchedule: String?
+    var quantityValue: String?
+    var quantityInstructions: String?
+
+    var repeatFrequency: String?
+
+    var imageURLs: [String]?
+
+    var createdAt: Date?
+    var updatedAt: Date?
 }
 
 

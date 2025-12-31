@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum AppRoute: Hashable {
+enum MainDestionationView: Hashable {
     case splash
     case onboarding
     case register

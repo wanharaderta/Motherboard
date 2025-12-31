@@ -20,6 +20,50 @@ class HomeViewModel: BaseViewModel {
         getGreeting()
     }
     
+    // New properties for home screen
+    var selectedKid: KidsModelResponse? {
+        kids.first
+    }
+    
+    var routineProgress: Double = 0.90 // 90%
+    var totalRoutines: Int = 10
+    var remainingRoutines: Int = 1
+    
+    var selectedRoutineCategory: RoutineCategory = .mealsAndBottles
+    
+    var upcomingRoutines: [UpcomingRoutine] = [
+        UpcomingRoutine(
+            icon: "icImagePlayingWithDolls",
+            timeRange: "07:00 - 09:00AM",
+            description: "Sonia's having a short nap",
+            routineType: .mealsAndBottles
+        ),
+        UpcomingRoutine(
+            icon: "icBabyBottle",
+            timeRange: "09:30 - 10:00AM",
+            description: "Sonia's light morning breakfast",
+            routineType: .mealsAndBottles
+        ),
+        UpcomingRoutine(
+            icon: "icPharma",
+            timeRange: "12:00 - 12:10PM",
+            description: "Sonia's medication as prescribed",
+            routineType: .medication
+        ),
+        UpcomingRoutine(
+            icon: "icBabyBottle",
+            timeRange: "01:00 - 01:30PM",
+            description: "Sonia's launch",
+            routineType: .mealsAndBottles
+        ),
+        UpcomingRoutine(
+            icon: "icNappy",
+            timeRange: "02:30 - 03:00PM",
+            description: "Sonia's diapers replacement",
+            routineType: .diaper
+        )
+    ]
+    
     // MARK: - Dependencies
     private let kidsRepository: KidsRepository = KidsRepositoryImpl()
     private var kidsListener: ListenerRegistration?
@@ -108,4 +152,31 @@ struct UpcomingItem: Identifiable {
     let id = UUID()
     let title: String
     let value: String
+}
+
+// MARK: - Routine Category
+enum RoutineCategory: String, CaseIterable {
+    case mealsAndBottles = "Meals & Bottles"
+    case medication = "Medication"
+    case diaper = "Diaper"
+    
+    var icon: String {
+        switch self {
+        case .mealsAndBottles:
+            return "icBabyBottle"
+        case .medication:
+            return "icPharma"
+        case .diaper:
+            return "icNappy"
+        }
+    }
+}
+
+// MARK: - Upcoming Routine
+struct UpcomingRoutine: Identifiable {
+    let id = UUID()
+    let icon: String
+    let timeRange: String
+    let description: String
+    let routineType: RoutineCategory
 }

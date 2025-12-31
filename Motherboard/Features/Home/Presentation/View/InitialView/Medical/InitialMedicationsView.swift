@@ -15,7 +15,7 @@ struct InitialMedicationsView: View {
     // MARK: - Properties
     @Environment(InitialViewModel.self) private var viewModel
     
-    @FocusState private var focusedField: Field?
+    @FocusState private var focusedField: LabelField?
     @State private var selectedPhoto: PhotosPickerItem?
     @State private var selectedImage: UIImage?
     @State private var showTimeSchedulePicker = false
@@ -24,14 +24,11 @@ struct InitialMedicationsView: View {
     @State private var selectedStartDate: Date = Date()
     @State private var showEndDatePicker = false
     @State private var selectedEndDate: Date = Date()
+    @State private var selectedRepeatFrequency: RepeatFrequency = .everyDay
     
     var onContinue: (() -> Void)?
     var onSkip: (() -> Void)?
     
-    // MARK: - Enums
-    enum Field {
-        case medicationName, dose, route, frequency, timeSchedule, startDate, endDate, doctorsNote
-    }
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -127,7 +124,7 @@ extension InitialMedicationsView {
                 get: { viewModel.medicationRequest.dose ?? .mgML },
                 set: { viewModel.medicationRequest.dose = $0 }
             ),
-            field: Field.dose,
+            field: .dose,
             focus: $focusedField
         )
     }
@@ -140,22 +137,62 @@ extension InitialMedicationsView {
                 get: { viewModel.medicationRequest.route ?? .oral },
                 set: { viewModel.medicationRequest.route = $0 }
             ),
-            field: Field.route,
+            field: .route,
             focus: $focusedField
         )
     }
     
     // MARK: - Frequency Field
     private var frequencyField: some View {
-        MenuField(
-            label: Constants.frequency,
-            selectedValue: Binding(
-                get: { viewModel.medicationRequest.frequency ?? .daily },
-                set: { viewModel.medicationRequest.frequency = $0 }
-            ),
-            field: Field.frequency,
-            focus: $focusedField
-        )
+        VStack(alignment: .leading, spacing: Spacing.xs) {
+            Text(Constants.frequency)
+                .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
+                .foregroundColor(Color.black300)
+            
+            Menu {
+                ForEach(RepeatFrequency.allCases.filter { $0 != .customDay }, id: \.self) { frequency in
+                    Button(action: {
+                        selectedRepeatFrequency = frequency
+                        // Map RepeatFrequency to MedicationFrequency for backward compatibility
+                        switch frequency {
+                        case .everyDay:
+                            viewModel.medicationRequest.frequency = .daily
+                        case .weekdaysOnly, .weekendsOnly:
+                            viewModel.medicationRequest.frequency = .daily
+                        case .customDay:
+                            break
+                        }
+                    }) {
+                        HStack {
+                            Text(frequency.displayName)
+                            if selectedRepeatFrequency == frequency {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                HStack {
+                    Text(selectedRepeatFrequency.displayName)
+                        .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
+                        .foregroundColor(Color.black300)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(Color.mineShaft)
+                        .font(.system(size: 12, weight: .medium))
+                }
+                .padding(Spacing.m)
+                .background(Color.green50)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(focusedField == .frequency ? Color.green200 : Color.borderNeutralWhite, lineWidth: 1)
+                )
+            }
+            .onTapGesture {
+                focusedField = .frequency
+            }
+        }
     }
     
     // MARK: - Time Schedule Field

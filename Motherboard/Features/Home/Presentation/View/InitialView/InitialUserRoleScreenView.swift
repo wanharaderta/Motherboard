@@ -10,7 +10,7 @@ import SwiftUI
 struct InitialUserRoleScreenView: View {
     
     // MARK: - Properties
-    @Environment(NavigationCoordinator.self) private var navigationCoordinator
+    @Environment(Router.self) private var navigationCoordinator
     @Environment(InitialViewModel.self) private var viewModel
     
     var body: some View {
@@ -56,7 +56,6 @@ struct InitialUserRoleScreenView: View {
                     selectedRole: viewModel.selectedRole,
                     onSelect: { selectedRole in
                         viewModel.selectedRole = selectedRole
-                        print("ffff \(viewModel.selectedRole?.rawValue)")
                     }
                 )
             }
@@ -69,7 +68,7 @@ extension InitialUserRoleScreenView {
     private var continueButton: some View {
         Button(action: {
             guard viewModel.selectedRole != nil else { return }
-            navigationCoordinator.navigate(to: InitialRoute.addChild)
+            navigationCoordinator.push(to: InitialRoute.addChild)
         }) {
             Text(Constants.continueString)
                 .appFont(name: .montserrat, weight: .semibold, size: FontSize.title14)

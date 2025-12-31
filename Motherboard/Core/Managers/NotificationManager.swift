@@ -19,6 +19,8 @@ enum AppNotification: String {
 
 enum AppNotificationKey: String {
     case isLogin
+    case isFrom
+    case loginPage
 }
 
 final class NotificationManager {

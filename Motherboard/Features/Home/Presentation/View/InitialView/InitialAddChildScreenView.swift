@@ -15,7 +15,7 @@ struct InitialAddChildScreenView: View {
     
     // MARK: - Properties
     @Environment(InitialViewModel.self) private var viewModel
-    @Environment(NavigationCoordinator.self) private var navigationCoordinator
+    @Environment(Router.self) private var navigationCoordinator
     
     @FocusState private var focusedField: Field?
     @State private var selectedPhoto: PhotosPickerItem?
@@ -80,7 +80,7 @@ struct InitialAddChildScreenView: View {
                 }
             }) {
                 Image(systemName: "chevron.left")
-                    .foregroundColor(Color.tundora)
+                    .foregroundColor(Color.mineShaft)
                     .font(.system(size: 20, weight: .medium))
             }
             
@@ -126,7 +126,7 @@ extension InitialAddChildScreenView {
         VStack(spacing: Spacing.l) {
             LabeledInputField(
                 label: Constants.childsName,
-                placeholder: Constants.fullname,
+                placeholder: Constants.fullName,
                 text: Binding(
                     get: { viewModel.childRequest.fullname ?? "" },
                     set: { viewModel.childRequest.fullname = $0 }
@@ -349,7 +349,7 @@ extension InitialAddChildScreenView {
         if (viewModel.childRequest.nickname ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             viewModel.childRequest.nickname = name
         }
-        navigationCoordinator.navigate(to: InitialRoute.healthMedicalInfo)
+        navigationCoordinator.push(to: InitialRoute.healthMedicalInfo)
     }
     
     // MARK: - Camera Handling

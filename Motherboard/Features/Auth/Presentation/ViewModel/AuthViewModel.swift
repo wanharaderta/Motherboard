@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseAuth
+import SwiftUI
 
 @MainActor
 @Observable
@@ -21,6 +22,9 @@ class AuthViewModel: BaseViewModel {
     // Register
     var fullName: String = ""
     var confirmPassword: String = ""
+    
+    // Change Password
+    var newPassword: String = ""
     
     private let userRepository: UserRepository = UserRepositoryImpl()
     
@@ -51,7 +55,10 @@ class AuthViewModel: BaseViewModel {
                 // Send login success notification using NotificationManager
                 NotificationManager.shared.post(
                     .didLogin,
-                    userInfo: [AppNotificationKey.isLogin.rawValue: true]
+                    userInfo: [
+                        AppNotificationKey.isLogin.rawValue: true,
+                        AppNotificationKey.isFrom.rawValue: AppNotificationKey.loginPage.rawValue
+                    ]
                 )
                 
                 print("✅ Login successful")
@@ -172,6 +179,45 @@ class AuthViewModel: BaseViewModel {
                 errorMessage = authError.errorDescription
                 isError = true
                 print("❌ Error sending password reset: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    // MARK: - Change Password Methods
+    
+    /// Update password using action code from email
+    func updatePassword(oobCode: String) async {
+        guard !newPassword.isEmpty, !confirmPassword.isEmpty else {
+            errorMessage = Constants.fillAllFields
+            isError = true
+            return
+        }
+        
+        guard newPassword.count >= 6 else {
+            errorMessage = Constants.passwordTooShort
+            isError = true
+            return
+        }
+        
+        guard newPassword == confirmPassword else {
+            errorMessage = Constants.passwordDoNotMatch
+            isError = true
+            return
+        }
+        
+        errorMessage = nil
+        isError = false
+        
+        await withLoading {
+            do {
+                try await AuthManager.shared.confirmPasswordReset(oobCode: oobCode, newPassword: newPassword)
+                isSuccess = true
+                print("✅ Password updated successfully")
+            } catch {
+                let authError = AuthError.from(error)
+                errorMessage = authError.errorDescription
+                isError = true
+                print("❌ Error updating password: \(error.localizedDescription)")
             }
         }
     }

@@ -17,11 +17,31 @@ extension Date {
         return ageComponents.year ?? 0
     }
     
-    /// Get age as formatted string (e.g., "5 years")
+    /// Get age as formatted string (e.g., "5 years" or "8 Month Old")
     /// - Returns: Formatted age string
     func ageString() -> String {
-        let years = calculateAge()
-        return "\(years) years"
+        let calendar = Calendar.current
+        let ageComponents = calendar.dateComponents([.year, .month], from: self, to: Date())
+        let years = ageComponents.year ?? 0
+        let months = ageComponents.month ?? 0
+        
+        if years == 0 && months > 0 {
+            return "\(months) Month Old"
+        } else if years > 0 {
+            return "\(years) years"
+        } else {
+            return "Newborn"
+        }
+    }
+    
+    /// Get age in months only
+    /// - Returns: Age in months as Int
+    func ageInMonths() -> Int {
+        let calendar = Calendar.current
+        let ageComponents = calendar.dateComponents([.year, .month], from: self, to: Date())
+        let years = ageComponents.year ?? 0
+        let months = ageComponents.month ?? 0
+        return (years * 12) + months
     }
     
     /// Format date to MM/dd/yyyy string format
@@ -39,5 +59,13 @@ extension Date {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM/dd/yyyy"
         return formatter.date(from: dateString)
+    }
+    
+    /// Format time to HH:mma format (e.g., "08:00AM", "02:30PM")
+    /// - Returns: Formatted time string
+    func formatTime() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "hh:mma"
+        return formatter.string(from: self)
     }
 }

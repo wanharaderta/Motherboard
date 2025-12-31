@@ -87,7 +87,7 @@ struct MenuField<Option: Hashable & Displayable & CaseIterable, Field: Hashable>
                 .foregroundColor(textColor)
             Spacer()
             Image(systemName: "chevron.down")
-                .foregroundColor(Color.tundora)
+                .foregroundColor(Color.mineShaft)
                 .font(.system(size: 12, weight: .medium))
         }
         .padding(Spacing.m)

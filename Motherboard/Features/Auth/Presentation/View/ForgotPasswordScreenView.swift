@@ -10,7 +10,7 @@ import SwiftUI
 struct ForgotPasswordScreenView: View {
     
     @State private var viewModel = AuthViewModel()
-    @Environment(NavigationCoordinator.self) private var navigationCoordinator
+    @Environment(Router.self) private var navigationCoordinator
     @FocusState private var focusedField: Field?
     
     enum Field {
@@ -32,6 +32,8 @@ struct ForgotPasswordScreenView: View {
                 headerView
                 titleView
                 formView
+                
+                Spacer()
             }
             .padding(.horizontal, Spacing.xl)
         }
@@ -48,16 +50,11 @@ struct ForgotPasswordScreenView: View {
         } message: {
             Text(viewModel.errorMessage ?? Constants.errorOccurred)
         }
-        .alert(Constants.success, isPresented: Binding(
-            get: { viewModel.isSuccess },
-            set: { if !$0 { viewModel.isSuccess = false } }
-        )) {
-            Button(Constants.ok) {
-                viewModel.isSuccess = false
+        .onChange(of: viewModel.isSuccess) { _, isSuccess in
+            if isSuccess {
+                // Navigate back to login screen
                 navigationCoordinator.pop()
             }
-        } message: {
-            Text(Constants.passwordResetEmailHasBeenSent)
         }
     }
     
@@ -86,7 +83,7 @@ struct ForgotPasswordScreenView: View {
                 }
             }) {
                 Image(systemName: "chevron.left")
-                    .foregroundColor(Color.tundora)
+                    .foregroundColor(Color.mineShaft)
                     .font(.system(size: 20, weight: .medium))
             }
             

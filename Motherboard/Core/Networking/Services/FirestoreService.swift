@@ -62,6 +62,38 @@ class FirestoreService {
     private init() {}
     
     
+    // MARK: - Listen to Single Document (Real-Time)
+    func listenToDocument<T: Decodable>(
+        collection: String,
+        documentID: String,
+        as type: T.Type,
+        onUpdate: @escaping (Result<T?, Error>) -> Void
+    ) -> ListenerRegistration {
+        return db.collection(collection).document(documentID).addSnapshotListener { snapshot, error in
+            if let error = error {
+                onUpdate(.failure(error))
+                return
+            }
+            
+            guard let snapshot = snapshot else {
+                onUpdate(.success(nil))
+                return
+            }
+            
+            guard snapshot.exists else {
+                onUpdate(.success(nil))
+                return
+            }
+            
+            do {
+                let model = try snapshot.data(as: type)
+                onUpdate(.success(model))
+            } catch {
+                onUpdate(.failure(error))
+            }
+        }
+    }
+    
     // MARK: - Get Documents with ID Sort, Real‐Time Listeners
     func listenToCollectionWithID<T: Decodable>(
         collection: String,

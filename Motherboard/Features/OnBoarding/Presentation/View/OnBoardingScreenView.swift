@@ -10,9 +10,11 @@ import SwiftUI
 struct OnBoardingScreenView: View {
     
     // MARK: - Properties
+    @AppStorage(Enums.hasCompletedOnboarding.rawValue) private var hasCompletedOnboarding: Bool = false
+    
     @State private var viewModel = OnboardingViewModel()
     @State private var currentPage: Int = 0
-    @Environment(NavigationCoordinator.self) private var navigationCoordinator
+    @Environment(Router.self) private var navigationCoordinator
     
     var body: some View {
         ZStack {
@@ -103,7 +105,7 @@ struct OnBoardingScreenView: View {
                             .foregroundColor(Color.mineShaftOpacity86)
                         
                         Button(action: {
-                            completeOnboarding()
+                            login()
                         }) {
                             Text(Constants.logIn)
                                 .appFont(name: .montserrat, weight: .medium, size: FontSize.title12)
@@ -139,17 +141,18 @@ extension OnBoardingScreenView {
     
     /// Skip onboarding and complete it
     func skipOnboarding() {
-        UserDefaults.standard.set(true, forKey: Enums.hasCompletedOnboarding.rawValue)
+        hasCompletedOnboarding = true
     }
     
     /// Complete onboarding
-    func completeOnboarding() {
-        UserDefaults.standard.set(true, forKey: Enums.hasCompletedOnboarding.rawValue)
+    func login() {
+        hasCompletedOnboarding = true
+        //navigationCoordinator.navigate(to: AppRoute.login)
     }
     
     /// Navigate to register screen
     func startRegistration() {
-        navigationCoordinator.navigate(to: AppRoute.register)
+        navigationCoordinator.push(to: MainDestionationView.register)
     }
 }
 

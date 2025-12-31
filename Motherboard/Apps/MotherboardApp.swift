@@ -16,6 +16,10 @@ struct MotherboardApp: App {
     var body: some Scene {
         WindowGroup {
             MainScreenView()
+                .onAppear {
+                    // Setup auth state listener on app launch
+                    AuthManager.shared.fethcUserData()
+                }
                 .onOpenURL { url in
                     // Handle URL opening for Google Sign In
                     _ = GIDSignIn.sharedInstance.handle(url)

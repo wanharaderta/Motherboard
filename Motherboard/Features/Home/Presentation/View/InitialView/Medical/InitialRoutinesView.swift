@@ -9,85 +9,12 @@ import Foundation
 import SwiftUI
 
 // MARK: - Routine Type
-
-enum RoutineType: String, CaseIterable, Identifiable {
-    case bottlesAndMeals
-    case medications
-    case diapers
-    case breastfeedingAndPumping
-    
-    var id: String { rawValue }
-    
-    var title: String {
-        switch self {
-        case .bottlesAndMeals:
-            return Constants.bottlesAndMeals
-        case .medications:
-            return Constants.medications
-        case .diapers:
-            return Constants.diapers
-        case .breastfeedingAndPumping:
-            return Constants.breastfeedingAndPumping
-        }
-    }
-    
-    var code: String {
-        switch self {
-        case .bottlesAndMeals:
-            return "bottles_meals"
-        case .medications:
-            return "medications"
-        case .diapers:
-            return "diapers"
-        case .breastfeedingAndPumping:
-            return "breastfeeding_pumping"
-        }
-    }
-    
-    var description: String {
-        switch self {
-        case .bottlesAndMeals:
-            return Constants.bottlesAndMealsDescription
-        case .medications:
-            return Constants.medicationsRoutineDescription
-        case .diapers:
-            return Constants.diapersDescription
-        case .breastfeedingAndPumping:
-            return Constants.breastfeedingAndPumpingDescription
-        }
-    }
-    
-    var iconName: String {
-        switch self {
-        case .bottlesAndMeals:
-            return "icBabyBottle"
-        case .medications:
-            return "icPharma"
-        case .diapers:
-            return "icNappy"
-        case .breastfeedingAndPumping:
-            return "icPersonWomen"
-        }
-    }
-    
-    var iconBackgroundColor: Color {
-        switch self {
-        case .bottlesAndMeals:
-            return Color.bgPampas
-        case .medications:
-            return Color.bgPastelPink
-        case .diapers:
-            return Color.bgBlueChalk
-        case .breastfeedingAndPumping:
-            return Color.bgCherub
-        }
-    }
-}
-
 struct InitialRoutinesView: View {
     
     // MARK: - Properties
     @Environment(InitialViewModel.self) private var viewModel
+    @Environment(Router.self) private var navigationCoordinator
+    @AppStorage(Enums.hasCompletedInitialData.rawValue) private var hasCompletedInitialData: Bool = false
     @FocusState private var focusedField: Field?
     
     var onContinue: (() -> Void)?
@@ -162,26 +89,39 @@ struct InitialRoutinesView: View {
     
     private var proceedButton: some View {
         Button(action: {
-            Task {
+            Task { @MainActor in
                 await viewModel.addChild()
+                if !viewModel.isError {
+                    hasCompletedInitialData = true
+                    
+                    // Navigate to home
+                    navigationCoordinator.replace(with: MainDestionationView.home)
+                }
             }
         }) {
-            Text(Constants.proceed)
-                .appFont(name: .montserrat, weight: .semibold, size: FontSize.title14)
-                .foregroundColor(isFormValid ? Color.white : Color.green500)
-                .frame(maxWidth: .infinity)
-                .frame(height: 50)
-                .background(isFormValid ? Color.primaryGreen900 : Color.white)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(
-                            isFormValid ? Color.white : Color.green500,
-                            lineWidth: 1
-                        )
-                )
+            HStack {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: Color.white))
+                } else {
+                    Text(Constants.proceed)
+                        .appFont(name: .montserrat, weight: .semibold, size: FontSize.title14)
+                }
+            }
+            .foregroundColor(isFormValid ? Color.white : Color.green500)
+            .frame(maxWidth: .infinity)
+            .frame(height: 50)
+            .background(isFormValid ? Color.primaryGreen900 : Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(
+                        isFormValid ? Color.white : Color.green500,
+                        lineWidth: 1
+                    )
+            )
         }
-        .disabled(!isFormValid)
+        .disabled(!isFormValid || viewModel.isLoading)
         .padding(.vertical, Spacing.xl)
     }
 }

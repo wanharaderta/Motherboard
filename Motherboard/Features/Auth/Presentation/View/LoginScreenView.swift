@@ -9,9 +9,10 @@ import SwiftUI
 
 struct LoginScreenView: View {
     
-    @State private var viewModel = AuthViewModel()
-    @Environment(NavigationCoordinator.self) private var navigationCoordinator
+    @Environment(Router.self) private var navigationCoordinator
+    
     @FocusState private var focusedField: Field?
+    @State private var viewModel = AuthViewModel()
     
     enum Field {
         case email, password
@@ -56,8 +57,7 @@ struct LoginScreenView: View {
         }
         .onChange(of: viewModel.isSuccess) { _, isSuccess in
             if isSuccess {
-                // Navigate to home screen after successful registration
-                navigationCoordinator.navigate(to: AppRoute.home)
+                navigationCoordinator.replace(with: MainDestionationView.home)
             }
         }
     }
@@ -116,7 +116,7 @@ struct LoginScreenView: View {
             HStack {
                 Spacer()
                 Button(action: {
-                    navigationCoordinator.navigate(to: AppRoute.forgotPassword)
+                    navigationCoordinator.push(to: MainDestionationView.forgotPassword)
                 }) {
                     Text(Constants.forgotPassword)
                         .appFont(name: .montserrat, weight: .medium, size: FontSize.title12)
@@ -163,7 +163,7 @@ struct LoginScreenView: View {
         VStack(spacing: Spacing.m) {
             HStack(spacing: Spacing.s) {
                 Rectangle()
-                    .fill(Color.tundora.opacity(0.2))
+                    .fill(Color.mineShaft.opacity(0.4))
                     .frame(height: 1)
                 
                 Text(Constants.orContinueWith)
@@ -172,7 +172,7 @@ struct LoginScreenView: View {
                     .foregroundColor(Color.mineShaftOpacity86)
                 
                 Rectangle()
-                    .fill(Color.tundora.opacity(0.2))
+                    .fill(Color.mineShaft.opacity(0.4))
                     .frame(height: 1)
             }
             
@@ -213,7 +213,7 @@ struct LoginScreenView: View {
                 .foregroundColor(Color.mineShaftOpacity86)
             
             Button(action: {
-                navigationCoordinator.navigate(to: AppRoute.login)
+                navigationCoordinator.push(to: MainDestionationView.register)
             }) {
                 Text(Constants.signUpHere)
                     .appFont(name: .montserrat, weight: .medium, size: FontSize.title12)

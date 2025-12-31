@@ -11,7 +11,7 @@ struct MainHealthMedicalInfoScreenView: View {
     
     // MARK: - Properties
     @Environment(InitialViewModel.self) private var initialViewModel
-    @Environment(NavigationCoordinator.self) private var navigationCoordinator
+    @Environment(Router.self) private var navigationCoordinator
     @State private var selectedTab: Int = 0
     
     private let totalScreens: Int = 6
@@ -20,20 +20,28 @@ struct MainHealthMedicalInfoScreenView: View {
     var onSkip: (() -> Void)?
     
     var body: some View {
-        VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: Spacing.m) {
-                headerView
-                if !isRoutinesView {
-                    progressBarView
+        ZStack {
+            VStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: Spacing.m) {
+                    headerView
+                    if !isRoutinesView {
+                        progressBarView
+                    }
                 }
+                .padding(.horizontal, Spacing.xl)
+                
+                contentView
             }
-            .padding(.horizontal, Spacing.xl)
+            .navigationBarBackButtonHidden()
+            .edgesIgnoringSafeArea(.bottom)
+            .background(Color.white.ignoresSafeArea())
+            .disabled(initialViewModel.isLoading)
             
-            contentView
+            // Loading Overlay - Blocks all interactions
+            if initialViewModel.isLoading {
+                loadingOverlay
+            }
         }
-        .navigationBarBackButtonHidden()
-        .edgesIgnoringSafeArea(.bottom)
-        .background(Color.white.ignoresSafeArea())
         .alert(Constants.error, isPresented: Binding(get: { initialViewModel.isError }, set: { if !$0 { initialViewModel.clearError() } })) {
             Button(Constants.ok) {
                 initialViewModel.clearError()
@@ -51,7 +59,7 @@ struct MainHealthMedicalInfoScreenView: View {
                     handleBack()
                 }) {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(Color.tundora)
+                        .foregroundColor(Color.mineShaft)
                         .font(.system(size: 18, weight: .medium))
                 }
                 
@@ -209,6 +217,33 @@ extension MainHealthMedicalInfoScreenView {
     
     private var headerSubtitle: String {
         isRoutinesView ? Constants.youCanSelectOneOrMultipleRoutines : Constants.healthMedicalInfoSubtitle
+    }
+    
+    // MARK: - Loading Overlay
+    private var loadingOverlay: some View {
+        ZStack {
+            // Full screen background overlay
+            Color.black.opacity(0.4)
+                .ignoresSafeArea(.all)
+                .allowsHitTesting(true)
+            
+            // Loading indicator centered
+            VStack(spacing: Spacing.l) {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: Color.primaryGreen900))
+                    .scaleEffect(1.5)
+                
+                Text("Please wait...")
+                    .appFont(name: .montserrat, weight: .medium, size: FontSize.title14)
+                    .foregroundColor(Color.codGreyText)
+            }
+            .padding(Spacing.xl)
+            .background(Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea(.all)
     }
     
 }

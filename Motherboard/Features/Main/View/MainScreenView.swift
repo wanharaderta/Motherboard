@@ -10,50 +10,24 @@ import Combine
 import Observation
 
 struct MainScreenView: View {
+    
+    // MARK: - Properties
+    
+    // App Storage
     @AppStorage(Enums.hasCompletedOnboarding.rawValue) private var hasCompletedOnboarding: Bool = false
+    
+    // State
     @State private var showSplash = true
-    @StateObject private var authManager = AuthManager.shared
+    @ObservedObject private var authManager = AuthManager.shared
     @State private var cancellables = Set<AnyCancellable>()
-    @State private var navigationCoordinator = NavigationCoordinator()
+    @State private var navigationCoordinator = Router()
     
     var body: some View {
         NavigationStack(path: $navigationCoordinator.navigationPath) {
-            Group {
-                if hasCompletedOnboarding {
-                    if authManager.isLoggedIn {
-                        HomeScreenView()
-                    } else {
-                        LoginScreenView()
-                    }
-                } else if showSplash {
-                    SplashScreenView()
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                withAnimation {
-                                    showSplash = false
-                                }
-                            }
-                        }
-                } else {
-                    OnBoardingScreenView()
+            rootContentView
+                .navigationDestination(for: MainDestionationView.self) { route in
+                    destinationView(for: route)
                 }
-            }
-            .navigationDestination(for: AppRoute.self) { route in
-                switch route {
-                case .splash:
-                    SplashScreenView()
-                case .onboarding:
-                    OnBoardingScreenView()
-                case .register:
-                    RegisterScreenView()
-                case .login:
-                    LoginScreenView()
-                case .forgotPassword:
-                    ForgotPasswordScreenView()
-                case .home:
-                    HomeScreenView()
-                }
-            }
         }
         .onAppear {
             authManager.fethcUserData()
@@ -61,10 +35,63 @@ struct MainScreenView: View {
         }
         .environment(navigationCoordinator)
     }
+    
+    // MARK: - Root Content View
+    @ViewBuilder
+    private var rootContentView: some View {
+        if showSplash {
+            SplashScreenView()
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        withAnimation {
+                            showSplash = false
+                        }
+                    }
+                }
+        } else {
+            if hasCompletedOnboarding {
+                authenticatedContentView
+            } else {
+                OnBoardingScreenView()
+            }
+        }
+    }
+    
+    // MARK: - Authenticated Content View
+    
+    @ViewBuilder
+    private var authenticatedContentView: some View {
+        if authManager.isLoggedIn {
+            MainTabsView()
+        } else {
+            LoginScreenView()
+        }
+    }
 }
 
-// MARK: - Notification Handling Extension
+// MARK: - Helpers
 extension MainScreenView {
+    
+    // MARK: - Navigation Destination
+    @ViewBuilder
+    private func destinationView(for route: MainDestionationView) -> some View {
+        switch route {
+        case .splash:
+            SplashScreenView()
+        case .onboarding:
+            OnBoardingScreenView()
+        case .register:
+            RegisterScreenView()
+        case .login:
+            LoginScreenView()
+        case .forgotPassword:
+            ForgotPasswordScreenView()
+        case .home:
+            HomeScreenView()
+        }
+    }
+    
+    // MARK: - Setup Notification Observer
     private func setupNotificationObserver() {
         NotificationManager.shared.publisher(for: .didLogin)
             .receive(on: DispatchQueue.main)
@@ -78,11 +105,15 @@ extension MainScreenView {
     private func handleLoginSuccess(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
               let isLogin = userInfo[AppNotificationKey.isLogin.rawValue] as? Bool,
-              isLogin else { return }
-        authManager.fethcUserData()
+              isLogin else {
+            return
+        }
+        
         hasCompletedOnboarding = true
         showSplash = false
-        navigationCoordinator.replace(with: AppRoute.home)
+        withAnimation {
+            navigationCoordinator.replace(with: MainDestionationView.home)
+        }
     }
 }
 

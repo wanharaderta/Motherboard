@@ -71,10 +71,10 @@ struct HomeKidsCellView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(name)
                     .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(Color.tundora)
+                    .foregroundColor(Color.mineShaft)
                 Text(age)
                     .font(.system(size: 14))
-                    .foregroundColor(Color.tundora.opacity(0.7))
+                    .foregroundColor(Color.mineShaft.opacity(0.7))
             }
             
             Spacer()
@@ -91,10 +91,10 @@ struct HomeKidsCellView: View {
         case .schedule(let time):
             Text(time)
                 .font(.system(size: 16, weight: .medium))
-                .foregroundColor(Color.tundora)
+                .foregroundColor(Color.mineShaft)
         case .kidRow:
             Image(systemName: "chevron.right")
-                .foregroundColor(Color.tundora.opacity(0.5))
+                .foregroundColor(Color.mineShaft.opacity(0.5))
                 .font(.system(size: 14, weight: .semibold))
         }
     }

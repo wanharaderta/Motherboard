@@ -18,7 +18,7 @@ struct MedicationModelRequest: Codable {
     var medicationEndDate: String?
     var doctorsNote: String?
     var medicationImage: UIImage?
-    var medicationImageURL: String?
+    var medicationImageURL: [String]?
     var kidID: String?
     
     enum CodingKeys: String, CodingKey {

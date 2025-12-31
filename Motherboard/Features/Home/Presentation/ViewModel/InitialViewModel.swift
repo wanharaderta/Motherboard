@@ -203,7 +203,7 @@ class InitialViewModel: BaseViewModel {
                         return
                     }
                     
-                    medicationRequest.medicationImageURL = imageURL
+                    medicationRequest.medicationImageURL = [imageURL]
                 }
 
                 if medicationRequest.dose == nil {

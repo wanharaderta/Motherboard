@@ -111,35 +111,35 @@ struct InitialAllergiesView: View {
                     set: { viewModel.allergyRequest.triggerDetails = $0 }
                 )
             )
-                .frame(minHeight: 100)
-                .scrollContentBackground(.hidden)
-                .padding(Spacing.m)
-                .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
-                .background(Color.green50)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(focusedField == .triggerDetails ? Color.green200 : Color.borderNeutralWhite, lineWidth: 1)
-                )
-                .overlay(
-                    Group {
-                        if (viewModel.allergyRequest.triggerDetails ?? "").isEmpty {
-                            VStack {
-                                HStack {
-                                    Text(Constants.typeInformationOnTriggerDetails)
-                                        .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
-                                        .foregroundColor(Color.mainGray)
-                                        .padding(Spacing.m)
-                                    Spacer()
-                                }
+            .frame(minHeight: 100)
+            .scrollContentBackground(.hidden)
+            .padding(Spacing.m)
+            .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
+            .background(Color.green50)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(focusedField == .triggerDetails ? Color.green200 : Color.borderNeutralWhite, lineWidth: 1)
+            )
+            .overlay(
+                Group {
+                    if (viewModel.allergyRequest.triggerDetails ?? "").isEmpty {
+                        VStack {
+                            HStack {
+                                Text(Constants.typeInformationOnTriggerDetails)
+                                    .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
+                                    .foregroundColor(Color.mainGray)
+                                    .padding(Spacing.m)
                                 Spacer()
                             }
+                            Spacer()
                         }
                     }
-                )
-                .onTapGesture {
-                    focusedField = .triggerDetails
                 }
+            )
+            .onTapGesture {
+                focusedField = .triggerDetails
+            }
         }
     }
     
@@ -156,35 +156,35 @@ struct InitialAllergiesView: View {
                     set: { viewModel.allergyRequest.reactionDescription = $0 }
                 )
             )
-                .frame(minHeight: 100)
-                .scrollContentBackground(.hidden)
-                .padding(Spacing.m)
-                .background(Color.green50)
-                .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(focusedField == .triggerDetails ? Color.green200 : Color.borderNeutralWhite, lineWidth: 1)
-                )
-                .overlay(
-                    Group {
-                        if (viewModel.allergyRequest.reactionDescription ?? "").isEmpty {
-                            VStack {
-                                HStack {
-                                    Text(Constants.typeInformationOnReactionDescription)
-                                        .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
-                                        .foregroundColor(Color.mainGray)
-                                        .padding(Spacing.m)
-                                    Spacer()
-                                }
+            .frame(minHeight: 100)
+            .scrollContentBackground(.hidden)
+            .padding(Spacing.m)
+            .background(Color.green50)
+            .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(focusedField == .triggerDetails ? Color.green200 : Color.borderNeutralWhite, lineWidth: 1)
+            )
+            .overlay(
+                Group {
+                    if (viewModel.allergyRequest.reactionDescription ?? "").isEmpty {
+                        VStack {
+                            HStack {
+                                Text(Constants.typeInformationOnReactionDescription)
+                                    .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
+                                    .foregroundColor(Color.mainGray)
+                                    .padding(Spacing.m)
                                 Spacer()
                             }
+                            Spacer()
                         }
                     }
-                )
-                .onTapGesture {
-                    focusedField = .reactionDescription
                 }
+            )
+            .onTapGesture {
+                focusedField = .reactionDescription
+            }
         }
     }
     
@@ -201,35 +201,35 @@ struct InitialAllergiesView: View {
                     set: { viewModel.allergyRequest.specificInstructions = $0 }
                 )
             )
-                .frame(minHeight: 100)
-                .scrollContentBackground(.hidden)
-                .padding(Spacing.m)
-                .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
-                .background(Color.green50)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(focusedField == .triggerDetails ? Color.green200 : Color.borderNeutralWhite, lineWidth: 1)
-                )
-                .overlay(
-                    Group {
-                        if (viewModel.allergyRequest.specificInstructions ?? "").isEmpty {
-                            VStack {
-                                HStack {
-                                    Text(Constants.exampleInstructions)
-                                        .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
-                                        .foregroundColor(Color.mainGray)
-                                        .padding(Spacing.m)
-                                    Spacer()
-                                }
+            .frame(minHeight: 100)
+            .scrollContentBackground(.hidden)
+            .padding(Spacing.m)
+            .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
+            .background(Color.green50)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(focusedField == .triggerDetails ? Color.green200 : Color.borderNeutralWhite, lineWidth: 1)
+            )
+            .overlay(
+                Group {
+                    if (viewModel.allergyRequest.specificInstructions ?? "").isEmpty {
+                        VStack {
+                            HStack {
+                                Text(Constants.exampleInstructions)
+                                    .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
+                                    .foregroundColor(Color.mainGray)
+                                    .padding(Spacing.m)
                                 Spacer()
                             }
+                            Spacer()
                         }
                     }
-                )
-                .onTapGesture {
-                    focusedField = .specificInstructions
                 }
+            )
+            .onTapGesture {
+                focusedField = .specificInstructions
+            }
         }
     }
     
@@ -264,18 +264,18 @@ struct InitialAllergiesView: View {
 extension InitialAllergiesView {
     
     private var isFormValid: Bool {
-            let name = (viewModel.allergyRequest.allergyName ?? "")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            let trigger = (viewModel.allergyRequest.triggerDetails ?? "")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            let reaction = (viewModel.allergyRequest.reactionDescription ?? "")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            let instructions = (viewModel.allergyRequest.specificInstructions ?? "")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            
-            return !name.isEmpty &&
-                   !trigger.isEmpty &&
-                   !reaction.isEmpty &&
-                   !instructions.isEmpty
+        let name = (viewModel.allergyRequest.allergyName ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let trigger = (viewModel.allergyRequest.triggerDetails ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let reaction = (viewModel.allergyRequest.reactionDescription ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let instructions = (viewModel.allergyRequest.specificInstructions ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        return !name.isEmpty &&
+        !trigger.isEmpty &&
+        !reaction.isEmpty &&
+        !instructions.isEmpty
     }
 }

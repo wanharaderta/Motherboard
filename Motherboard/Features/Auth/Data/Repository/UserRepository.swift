@@ -34,22 +34,25 @@ class UserRepositoryImpl: UserRepository {
     ) -> ListenerRegistration {
         let path = FirestoreCollection.users.path
         
-        let listener = FirestoreService.shared.listenToCollectionWithID(
+        // Use listenToDocument to directly listen to the specific document by ID
+        // This is more efficient for single document queries
+        let listener = FirestoreService.shared.listenToDocument(
             collection: path,
+            documentID: userID,
             as: UserModelResponse.self
         ) { result in
             switch result {
-            case .success(let docs):
-                if let (docID, userData) = docs.first(where: { $0.id == userID }) {
-                    var user = userData
-                    user.id = docID
+            case .success(let userData):
+                if var user = userData {
+                    // Set the document ID
+                    user.id = userID
                     DispatchQueue.main.async { onUpdate(.success(user)) }
                 } else {
+                    // Document doesn't exist
                     DispatchQueue.main.async { onUpdate(.success(nil)) }
                 }
-                
-            case .failure(let e):
-                DispatchQueue.main.async { onUpdate(.failure(e)) }
+            case .failure(let error):
+                DispatchQueue.main.async { onUpdate(.failure(error)) }
             }
         }
         return listener

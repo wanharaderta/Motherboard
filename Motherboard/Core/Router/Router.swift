@@ -10,11 +10,11 @@ import Observation
 
 @Observable
 @MainActor
-class NavigationCoordinator {
+class Router {
     var navigationPath = NavigationPath()
     
     /// Navigate to a specific route
-    func navigate<T: Hashable>(to route: T) {
+    func push<T: Hashable>(to route: T) {
         navigationPath.append(route)
     }
     
@@ -43,7 +43,7 @@ class NavigationCoordinator {
     /// For more complex scenarios, you may need to track path history
     func popTo<T: Hashable>(_ targetRoute: T) {
         popToRoot()
-        navigate(to: targetRoute)
+        push(to: targetRoute)
     }
     
     /// Pop multiple levels

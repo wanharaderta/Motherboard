@@ -19,6 +19,7 @@ enum MotherboardFontWeight: String {
     case medium = "Medium"
     case semibold = "Semibold"
     case bold = "Bold"
+    case italic = "Italic"
 }
 
 extension Font {

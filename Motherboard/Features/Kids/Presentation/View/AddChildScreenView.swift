@@ -41,7 +41,7 @@ struct AddChildScreenView: View {
                     dismiss()
                 }) {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(Color.tundora)
+                        .foregroundColor(Color.mineShaft)
                         .font(.system(size: 18, weight: .medium))
                 }
             }
@@ -60,7 +60,7 @@ struct AddChildScreenView: View {
         VStack(spacing: Spacing.m) {
             Text(Constants.addChild)
                 .appFont(name: .spProDisplay, weight: .semibold, size: FontSize.largeTitle30)
-                .foregroundColor(Color.tundora)
+                .foregroundColor(Color.codGreyText)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -70,9 +70,9 @@ struct AddChildScreenView: View {
         VStack(spacing: Spacing.xl) {
             // Full Name Field
             VStack(alignment: .leading, spacing: Spacing.xs) {
-                Text(Constants.fullname)
+                Text(Constants.fullName)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color.tundora)
+                    .foregroundColor(Color.mineShaft)
                 
                 TextField(Constants.enterFullname, text: $viewModel.fullname)
                     .textFieldStyle(.plain)
@@ -90,7 +90,7 @@ struct AddChildScreenView: View {
             VStack(alignment: .leading, spacing: Spacing.xs) {
                 Text(Constants.nickname)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color.tundora)
+                    .foregroundColor(Color.mineShaft)
                 
                 TextField(Constants.enterNickname, text: $viewModel.nickname)
                     .textFieldStyle(.plain)
@@ -108,7 +108,7 @@ struct AddChildScreenView: View {
             VStack(alignment: .leading, spacing: Spacing.xs) {
                 Text(Constants.dateOfBirth)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color.tundora)
+                    .foregroundColor(Color.mineShaft)
                 
                 DatePicker("", selection: $viewModel.dob, displayedComponents: .date)
                     .datePickerStyle(.compact)
@@ -122,7 +122,7 @@ struct AddChildScreenView: View {
             VStack(alignment: .leading, spacing: Spacing.xs) {
                 Text(Constants.gender)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color.tundora)
+                    .foregroundColor(Color.mineShaft)
                 
                 Picker("", selection: $viewModel.gender) {
                     ForEach(Gender.allCases, id: \.self) { gender in
@@ -139,7 +139,7 @@ struct AddChildScreenView: View {
             VStack(alignment: .leading, spacing: Spacing.xs) {
                 Text(Constants.notes)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color.tundora)
+                    .foregroundColor(Color.mineShaft)
                 
                 ZStack(alignment: .topLeading) {
                     if viewModel.notesGeneral.isEmpty {
@@ -172,7 +172,7 @@ struct AddChildScreenView: View {
             VStack(alignment: .leading, spacing: Spacing.xs) {
                 Text(Constants.photo)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color.tundora)
+                    .foregroundColor(Color.mineShaft)
                 
                 if let image = selectedImage {
                     VStack(spacing: Spacing.m) {
@@ -204,7 +204,7 @@ struct AddChildScreenView: View {
                             
                             Text("Add Photo")
                                 .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(Color.tundora)
+                                .foregroundColor(Color.mineShaft)
                         }
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)

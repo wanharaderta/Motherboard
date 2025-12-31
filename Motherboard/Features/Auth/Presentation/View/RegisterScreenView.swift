@@ -10,7 +10,7 @@ import SwiftUI
 struct RegisterScreenView: View {
     
     @State private var viewModel = AuthViewModel()
-    @Environment(NavigationCoordinator.self) private var navigationCoordinator
+    @Environment(Router.self) private var navigationCoordinator
     @FocusState private var focusedField: Field?
     
     enum Field {
@@ -46,8 +46,7 @@ struct RegisterScreenView: View {
         }
         .onChange(of: viewModel.isSuccess) { _, isSuccess in
             if isSuccess {
-                // Navigate to home screen after successful registration
-                navigationCoordinator.navigate(to: AppRoute.home)
+                navigationCoordinator.replace(with: MainDestionationView.home)
             }
         }
     }
@@ -104,7 +103,7 @@ struct RegisterScreenView: View {
                 field: .confirmPassword,
                 focus: $focusedField
             )
-
+            
             Button(action: {
                 Task {
                     await viewModel.signUpWithEmail()
@@ -139,7 +138,7 @@ struct RegisterScreenView: View {
         VStack(spacing: Spacing.m) {
             HStack(spacing: Spacing.s) {
                 Rectangle()
-                    .fill(Color.tundora.opacity(0.2))
+                    .fill(Color.mineShaft.opacity(0.4))
                     .frame(height: 1)
                 
                 Text(Constants.orSignUpWith)
@@ -147,7 +146,7 @@ struct RegisterScreenView: View {
                     .foregroundColor(Color.mineShaftOpacity86)
                 
                 Rectangle()
-                    .fill(Color.tundora.opacity(0.2))
+                    .fill(Color.mineShaft.opacity(0.4))
                     .frame(height: 1)
             }
             
@@ -188,7 +187,7 @@ struct RegisterScreenView: View {
                 .foregroundColor(Color.mineShaftOpacity86)
             
             Button(action: {
-                navigationCoordinator.navigate(to: AppRoute.login)
+                navigationCoordinator.push(to: MainDestionationView.login)
             }) {
                 Text(Constants.logIn)
                     .appFont(name: .montserrat, weight: .medium, size: FontSize.title12)

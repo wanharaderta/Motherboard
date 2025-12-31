@@ -26,19 +26,31 @@ final class AuthManager: ObservableObject {
     
     // MARK: - Auth State Listener
     func fethcUserData() {
+        // Remove existing listener if any
+        if let existingListener = authStateListener {
+            Auth.auth().removeStateDidChangeListener(existingListener)
+        }
+        
         authStateListener = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             Task { @MainActor in
-                self?.currentUser = user
-                self?.isLoggedIn = user != nil
+                guard let self = self else { return }
+                self.currentUser = user
+                let wasLoggedIn = self.isLoggedIn
+                self.isLoggedIn = user != nil
+                
+                if self.isLoggedIn != wasLoggedIn {
+                    print("🔄 AuthManager: isLoggedIn changed from \(wasLoggedIn) to \(self.isLoggedIn)")
+                }
+                
                 // Remove existing user listener
-                self?.userListener?.remove()
-                self?.userListener = nil
+                self.userListener?.remove()
+                self.userListener = nil
                 
                 // Setup user data listener when user logs in
                 if let userID = user?.uid {
-                    self?.setupUserDataListener(userID: userID)
+                    self.setupUserDataListener(userID: userID)
                 } else {
-                    self?.userData = nil
+                    self.userData = nil
                 }
             }
         }
@@ -100,6 +112,15 @@ final class AuthManager: ObservableObject {
     /// - Parameter email: User's email address
     func resetPassword(email: String) async throws {
         try await Auth.auth().sendPasswordReset(withEmail: email)
+    }
+    
+    /// Confirm password reset with action code
+    /// - Parameters:
+    ///   - oobCode: The action code from the password reset email
+    ///   - newPassword: The new password
+    /// - Throws: AuthError if confirmation fails
+    func confirmPasswordReset(oobCode: String, newPassword: String) async throws {
+        try await Auth.auth().confirmPasswordReset(withCode: oobCode, newPassword: newPassword)
     }
     
     /// Get current user ID (convenience property)

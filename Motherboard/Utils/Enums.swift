@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import SwiftUI
 
 // MARK: - AppStorageConfig Keys
 enum Enums: String {
     case hasCompletedOnboarding = "hasCompletedOnboarding"
+    case hasCompletedInitialData = "hasCompletedInitialData"
 }
 
 // MARK: - Gender Enum
@@ -183,11 +185,252 @@ enum MedicationFrequency: String, Codable, CaseIterable {
     }
 }
 
-// MARK: - Displayable Conformance
+enum RoutineType: String, CaseIterable, Identifiable {
+    case bottlesAndMeals
+    case medications
+    case diapers
+    case breastfeedingAndPumping
+    
+    var id: String { rawValue }
+    
+    var title: String {
+        switch self {
+        case .bottlesAndMeals:
+            return Constants.bottlesAndMeals
+        case .medications:
+            return Constants.medications
+        case .diapers:
+            return Constants.diapers
+        case .breastfeedingAndPumping:
+            return Constants.breastfeedingAndPumping
+        }
+    }
+    
+    var code: String {
+        switch self {
+        case .bottlesAndMeals:
+            return "bottles_meals"
+        case .medications:
+            return "medications"
+        case .diapers:
+            return "diapers"
+        case .breastfeedingAndPumping:
+            return "breastfeeding_pumping"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .bottlesAndMeals:
+            return Constants.bottlesAndMealsDescription
+        case .medications:
+            return Constants.medicationsRoutineDescription
+        case .diapers:
+            return Constants.diapersDescription
+        case .breastfeedingAndPumping:
+            return Constants.breastfeedingAndPumpingDescription
+        }
+    }
+    
+    var iconName: String {
+        switch self {
+        case .bottlesAndMeals:
+            return "icBabyBottle"
+        case .medications:
+            return "icPharma"
+        case .diapers:
+            return "icNappy"
+        case .breastfeedingAndPumping:
+            return "icPersonWomen"
+        }
+    }
+    
+    var iconBackgroundColor: Color {
+        switch self {
+        case .bottlesAndMeals:
+            return Color.bgPampas
+        case .medications:
+            return Color.bgPastelPink
+        case .diapers:
+            return Color.bgBlueChalk
+        case .breastfeedingAndPumping:
+            return Color.bgCherub
+        }
+    }
+}
 
+enum MealName: String, CaseIterable {
+    case breakfast = "Breakfast"
+    case lunch = "Lunch"
+    case dinner = "Dinner"
+}
+
+// MARK: - Default Time Enum (Reusable for Meal and Bottle)
+enum DefaultTime: String, CaseIterable {
+    case eightAM = "08:00AM"
+    case nineAM = "09:00AM"
+    case tenAM = "10:00AM"
+    
+    var firebaseValue: String {
+        switch self {
+        case .eightAM:
+            return "08:00"
+        case .nineAM:
+            return "09:00"
+        case .tenAM:
+            return "10:00"
+        }
+    }
+}
+
+// MARK: - Default Ounces Enum
+enum DefaultOunces: String, CaseIterable, Hashable {
+    case fiftyML = "50mL (1.7 Oz)"
+    case threeFiftyML = "350mL (12 Oz)"
+}
+
+// MARK: - Repeat Frequency Enum
+enum RepeatFrequency: String, CaseIterable {
+    case everyDay = "Every day"
+    case weekdaysOnly = "Weekdays Only"
+    case weekendsOnly = "Weekends Only"
+    case customDay = "+ Custom days"
+    
+    var displayName: String {
+        return rawValue
+    }
+}
+
+// MARK: - Week Day Enum
+enum WeekDay: String, CaseIterable, Identifiable, Hashable {
+    case monday = "Monday"
+    case tuesday = "Tuesday"
+    case wednesday = "Wednesday"
+    case thursday = "Thursday"
+    case friday = "Friday"
+    case saturday = "Saturday"
+    case sunday = "Sunday"
+    
+    var id: String { rawValue }
+}
+
+// MARK: - Time Item
+enum TimeItem: Identifiable, Hashable {
+    case defaultTime(DefaultTime)
+    case customTime(String)
+    
+    var id: String {
+        switch self {
+        case .defaultTime(let time):
+            return time.rawValue
+        case .customTime(let timeString):
+            return timeString
+        }
+    }
+    
+    var displayName: String {
+        switch self {
+        case .defaultTime(let time):
+            return time.rawValue
+        case .customTime(let timeString):
+            return timeString
+        }
+    }
+    
+    var firebaseValue: String {
+        switch self {
+        case .defaultTime(let time):
+            return time.firebaseValue
+        case .customTime(let timeString):
+            // Convert "08:00AM" format to "08:00" for Firebase
+            return timeString.replacingOccurrences(of: "AM", with: "")
+                .replacingOccurrences(of: "PM", with: "")
+        }
+    }
+}
+
+// MARK: - Diapers Type
+enum DiapersType: String, CaseIterable {
+    case wet = "Wet"
+    case bm = "BM"
+    case mixed = "Mixed"
+    
+    var id: String { rawValue }
+}
+
+// MARK: - Diapers Type
+enum BreastType: String, CaseIterable {
+    case right = "Right"
+    case left = "Left"
+    
+    var id: String { rawValue }
+}
+
+// MARK: - Label Field (Reusable for all pages)
+enum LabelField: Hashable {
+    // Common fields
+    case name
+    case title
+    case routineTitle
+    case description
+    case notes
+    case email
+    case password
+    case confirmPassword
+    case newPassword
+    
+    // Medications
+    case medicationName
+    case dose
+    case route
+    case frequency
+    case timeSchedule
+    case startDate
+    case endDate
+    case doctorsNote
+    
+    // Routines (Meals & Bottles, Diapers)
+    case feedingInstructions
+    case bottlingInstructions
+    case customOunces
+    
+    // Child/User
+    case childsName
+    case fullname
+    case fullName
+    case nickname
+    case dateOfBirth
+    case gender
+    
+    // Allergies
+    case allergyName
+    case severity
+    case triggerDetails
+    case reactionDescription
+    case specificInstructions
+    
+    // Medical Information
+    case conditionName
+    case doctorsInstructions
+    case doctorName
+    case practiceName
+    case phone
+    case address
+    case portalLink
+    
+    // Emergency Medication
+    case autoInjectorBrand
+    case whenToAdminister
+    
+    // Other
+    case none
+}
+
+// MARK: - Displayable Conformance
 extension MedicationDose: Displayable {}
 extension MedicationRoute: Displayable {}
 extension MedicationFrequency: Displayable {}
+extension RepeatFrequency: Displayable {}
 extension AllergySeverity: Displayable {}
 extension Ongoing: Displayable {}
 extension Gender: Displayable {}
