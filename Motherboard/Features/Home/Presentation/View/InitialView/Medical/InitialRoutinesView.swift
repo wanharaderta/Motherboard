@@ -95,7 +95,7 @@ struct InitialRoutinesView: View {
                     hasCompletedInitialData = true
                     
                     // Navigate to home
-                    navigationCoordinator.replace(with: MainDestionationView.home)
+                    navigationCoordinator.replace(with: MainDestinationsView.home)
                 }
             }
         }) {

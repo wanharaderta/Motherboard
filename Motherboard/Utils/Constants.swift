@@ -244,6 +244,9 @@ struct Constants {
     static let pumpingInstructionsNotes = "Pumping Instructions notes"
     static let pumpingInstructionsPlaceholder = "E.g, Ensure to pump Sonia by 9:00am prompt."
     
+    // MARK: - Empty State
+    static let noRoutinesAddedYet = "No routines added yet"
+    static let createRoutinesDescription = "Create routines to help your caregiver follow your child's daily structure."
 
     // MARK: - Common
     static let skip = "Skip"

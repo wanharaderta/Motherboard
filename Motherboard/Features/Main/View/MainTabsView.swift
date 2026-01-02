@@ -26,10 +26,7 @@ struct MainTabsView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background(Color.white)
                 case .settings:
-                    // TODO: Replace with real settings screen once available.
-                    Text("Settings Screen")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color.white)
+                    SettingsScreenView()
                 }
             }
             CustomBottomNavBar(selectedTab: $selectedTab)

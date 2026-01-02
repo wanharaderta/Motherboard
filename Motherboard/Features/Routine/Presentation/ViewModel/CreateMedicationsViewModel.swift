@@ -67,21 +67,37 @@ final class CreateMedicationsViewModel: BaseViewModel {
         }
         
         do {
-            // 1. Upload medication images to Firebase Storage (for medications collection)
-            var medicationImageURLs: [String] = []
+            // 1. Upload images in parallel (optimized)
+            var allImageURLs: [String] = []
             if !selectedImages.isEmpty {
-                for (index, image) in selectedImages.enumerated() {
-                    let imagePath = "medications/\(userID)/"
-                    let fileName = "\(UUID().uuidString)_\(index).jpg"
-                    let gsURL = try await storageManager.uploadImage(
-                        image: image,
-                        path: imagePath,
-                        fileName: fileName,
-                        compressionQuality: 0.7
-                    )
-                    medicationImageURLs.append(gsURL)
+                // Upload all images concurrently using TaskGroup while maintaining order
+                allImageURLs = try await withThrowingTaskGroup(of: (Int, String).self) { group in
+                    var urlDict: [Int: String] = [:]
+                    
+                    for (index, image) in selectedImages.enumerated() {
+                        group.addTask {
+                            let imagePath = "medications/\(userID)/"
+                            let fileName = "\(UUID().uuidString)_\(index).jpg"
+                            let url = try await self.storageManager.uploadImage(
+                                image: image,
+                                path: imagePath,
+                                fileName: fileName,
+                                compressionQuality: 0.7
+                            )
+                            return (index, url)
+                        }
+                    }
+                    
+                    for try await (index, url) in group {
+                        urlDict[index] = url
+                    }
+                    
+                    // Reconstruct array in original order
+                    return selectedImages.indices.compactMap { urlDict[$0] }
                 }
-                medicationRequest.medicationImageURL = medicationImageURLs
+                
+                // Use same URLs for both collections (no need to upload twice)
+                medicationRequest.medicationImageURL = allImageURLs
             }
             
             // 2. Set default values if nil (like InitialViewModel)
@@ -98,48 +114,40 @@ final class CreateMedicationsViewModel: BaseViewModel {
             // 3. Set kidID to medicationRequest
             medicationRequest.kidID = kidID
             
-            // 4. Save medication to medications collection
-            let medicationID = try await homeRepository.addMedication(
-                userID: userID,
-                medication: medicationRequest
-            )
-            print("✅ Add medication successful - Medication ID: \(medicationID)")
-            
-            // 5. Upload images for routine (for routines collection)
-            var routineImageURLs: [String] = []
-            for (index, image) in selectedImages.enumerated() {
-                let imagePath = "routines/\(userID)/"
-                let fileName = "\(UUID().uuidString)_\(index).jpg"
-                let gsURL = try await storageManager.uploadImage(
-                    image: image,
-                    path: imagePath,
-                    fileName: fileName,
-                    compressionQuality: 0.7
-                )
-                routineImageURLs.append(gsURL)
-            }
-            
-            // 6. Create routine request
+            // 4. Create routine request (using same image URLs)
             let routine = RoutineModelRequest(
                 code: RoutineType.medications.code,
                 title: medicationName,
                 description: medicationRequest.doctorsNote ?? "",
                 kidID: kidID,
                 activityName: medicationRequest.medicationName,
-                scheduledTime: medicationRequest.timeSchedule,
+                scheduledTime: medicationRequest.medicationStartDate,
+                endScheduledTime: medicationRequest.medicationEndDate,
                 instructions: medicationRequest.doctorsNote,
                 quantitySchedule: nil,
                 quantityValue: medicationRequest.dose?.rawValue,
                 quantityInstructions: nil,
                 repeatFrequency: selectedRepeatFrequency,
-                imageURLs: routineImageURLs,
+                intervalHours: medicationRequest.intervalHour,
+                imageURLs: allImageURLs,
                 createdAt: Date(),
                 updatedAt: Date()
             )
             
-            // 7. Save routine to routines collection
-            let routineID = try await repository.addRoutine(userID: userID, routine: routine)
-            print("✅ Routine created successfully with ID: \(routineID)")
+            // 5. Save medication and create routine concurrently
+            async let medicationID = homeRepository.addMedication(
+                userID: userID,
+                medication: medicationRequest
+            )
+            
+            async let routineID = repository.addRoutine(userID: userID, routine: routine)
+            
+            // Wait for both operations to complete
+            let finalMedicationID = try await medicationID
+            let finalRoutineID = try await routineID
+            
+            print("✅ Add medication successful - Medication ID: \(finalMedicationID)")
+            print("✅ Routine created successfully with ID: \(finalRoutineID)")
             
             // Set success state
             isSuccess = true
@@ -159,5 +167,22 @@ final class CreateMedicationsViewModel: BaseViewModel {
         selectedRepeatFrequency = RepeatFrequency.everyDay.rawValue
         selectedImagesData = []
         selectedImages = []
+    }
+}
+
+// MARK: - Extension
+extension CreateMedicationsViewModel {
+    // MARK: - End Scheduled Time (scheduledTime + 30 minutes)
+    var endScheduledTime: String? {
+        guard let timeSchedule = medicationRequest.timeSchedule, !timeSchedule.isEmpty else { return nil }
+        
+        // Try to parse as time string first (hh:mma format)
+        if let timeDate = Date.parseTime(from: timeSchedule) {
+            // Add 30 minutes
+            let endTime = timeDate.addingMinutes(30)
+            // Format back to string
+            return endTime.formatTime()
+        }
+        return nil
     }
 }

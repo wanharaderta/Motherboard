@@ -301,6 +301,37 @@ enum RepeatFrequency: String, CaseIterable {
     }
 }
 
+// MARK: - Time Interval Enum
+enum TimeInterval: String, CaseIterable, Hashable, Displayable {
+    case every1Hour = "Every 1 hour interval"
+    case every2Hours = "Every 2 hours interval"
+    case every4Hours = "Every 4 hours interval"
+    case every6Hours = "Every 6 hours interval"
+    case every8Hours = "Every 8 hours interval"
+    case every12Hours = "Every 12 hours interval"
+    
+    var displayName: String {
+        return rawValue
+    }
+    
+    var code: Int {
+        switch self {
+        case .every1Hour:
+            return 1
+        case .every2Hours:
+            return 2
+        case .every4Hours:
+            return 4
+        case .every6Hours:
+            return 6
+        case .every8Hours:
+            return 8
+        case .every12Hours:
+            return 12
+        }
+    }
+}
+
 // MARK: - Week Day Enum
 enum WeekDay: String, CaseIterable, Identifiable, Hashable {
     case monday = "Monday"

@@ -16,6 +16,7 @@ struct RoutineModelRequest: Codable {
 
     var activityName: String?
     var scheduledTime: String?
+    var endScheduledTime: String?
     var instructions: String?
 
     var quantitySchedule: String?
@@ -23,11 +24,10 @@ struct RoutineModelRequest: Codable {
     var quantityInstructions: String?
 
     var repeatFrequency: String?
+    var intervalHours: Int?
 
     var imageURLs: [String]?
 
     var createdAt: Date?
     var updatedAt: Date?
 }
-
-

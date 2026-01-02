@@ -170,6 +170,7 @@ final class CreateMealAndBottlesViewModel: BaseViewModel {
                 kidID: kidID,
                 activityName: selectedMealName?.rawValue,
                 scheduledTime: selectedMealTime,
+                endScheduledTime: endScheduledTime,
                 instructions: feedingInstructions.isEmpty ? nil : feedingInstructions,
                 quantitySchedule: selectedBottleTime,
                 quantityValue: selectedOunces,
@@ -209,5 +210,22 @@ final class CreateMealAndBottlesViewModel: BaseViewModel {
         selectedRepeatFrequency = RepeatFrequency.everyDay.rawValue
         selectedImagesData = []
         selectedImages = []
+    }
+}
+
+// MARK: - Extension
+extension CreateMealAndBottlesViewModel {
+    // MARK: - End Scheduled Time (scheduledTime + 30 minutes)
+    var endScheduledTime: String? {
+        guard let selectedMealTime = selectedMealTime else { return nil }
+        
+        // Parse time string to Date
+        guard let timeDate = Date.parseTime(from: selectedMealTime) else { return nil }
+        
+        // Add 30 minutes
+        let endTime = timeDate.addingMinutes(30)
+        
+        // Format back to string
+        return endTime.formatTime()
     }
 }

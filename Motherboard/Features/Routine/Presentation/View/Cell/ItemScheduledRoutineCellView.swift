@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ItemScheduledRoutineCellView: View {
     
-    let routine: ScheduledRoutine
+    let routine: RoutinesModelResponse
     var onEdit: (() -> Void)?
     var onDelete: (() -> Void)?
     
@@ -27,11 +27,11 @@ struct ItemScheduledRoutineCellView: View {
             }
             
             VStack(alignment: .leading, spacing: Spacing.xxs) {
-                Text(routine.timeRange)
+                Text(routine.timeRangeDisplay)
                     .appFont(name: .montserrat, weight: .medium, size: FontSize.title14)
                     .foregroundStyle(Color.mineShaft.opacity(0.9))
                 
-                Text(routine.note)
+                Text(routine.title)
                     .appFont(name: .montserrat, weight: .reguler, size: FontSize.title10)
                     .foregroundStyle(Color.mineShaft.opacity(0.6))
                     .multilineTextAlignment(.leading)
@@ -64,6 +64,14 @@ struct ItemScheduledRoutineCellView: View {
 
 #Preview {
     ItemScheduledRoutineCellView(
-        routine: ScheduledRoutine(id: UUID(), timeRange: "07:00 - 09:00AM", note: "Sonia's having a short nap")
+        routine: RoutinesModelResponse(
+            id: "",
+            code: "",
+            title: "Sonia's having a short nap",
+            description: "",
+            kidID: "",
+            scheduledTime: "07:00AM",
+            endScheduledTime: "09:00AM"
+        )
     )
 }

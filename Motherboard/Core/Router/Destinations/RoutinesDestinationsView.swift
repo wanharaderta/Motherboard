@@ -32,7 +32,7 @@ enum RoutinesRoute: Hashable, Identifiable {
 }
 
 // MARK: - Routines Destination View
-struct RoutinesDestinationView: View {
+struct RoutinesDestinationsView: View {
     let route: RoutinesRoute
     
     var body: some View {

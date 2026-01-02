@@ -118,6 +118,7 @@ final class CreateDiapersViewModel: BaseViewModel {
                 kidID: kidID,
                 activityName: selectedType?.rawValue,
                 scheduledTime: selectedTime,
+                endScheduledTime: endScheduledTime,
                 instructions: diapersInstructions.isEmpty ? nil : diapersInstructions,
                 quantitySchedule: nil,
                 quantityValue: nil,
@@ -155,5 +156,22 @@ final class CreateDiapersViewModel: BaseViewModel {
         selectedImagesData = []
         selectedImages = []
         customTimes = []
+    }
+}
+
+// MARK: - Extension
+extension CreateDiapersViewModel {
+    // MARK: - End Scheduled Time (scheduledTime + 30 minutes)
+    var endScheduledTime: String? {
+        guard let selectedTime = selectedTime else { return nil }
+        
+        // Parse time string to Date
+        guard let timeDate = Date.parseTime(from: selectedTime) else { return nil }
+        
+        // Add 30 minutes
+        let endTime = timeDate.addingMinutes(30)
+        
+        // Format back to string
+        return endTime.formatTime()
     }
 }

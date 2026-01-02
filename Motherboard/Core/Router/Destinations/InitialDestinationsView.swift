@@ -26,7 +26,7 @@ enum InitialRoute: Hashable, Identifiable {
 }
 
 // MARK: - Initial Destination View
-struct InitialDestinationView: View {
+struct InitialDestinationsView: View {
     let route: InitialRoute
     
     var body: some View {

@@ -15,6 +15,7 @@ struct HeaderHomeScreenView: View {
     @Bindable var viewModel: HomeViewModel
     @Binding var selectedBalance: Double?
     @Binding var barSelection: String?
+    var router: Router
     
     @State var ppURL: URL?
     
@@ -109,7 +110,7 @@ struct HeaderHomeScreenView: View {
     // MARK: - Notification Button
     private var notificationButton: some View {
         Button(action: {
-            // Handle notification tap
+            router.push(to: HomeRoute.notifications)
         }) {
             Image("icHomeNotification")
                 .frame(width: 36, height: 36)

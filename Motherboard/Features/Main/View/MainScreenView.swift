@@ -25,7 +25,7 @@ struct MainScreenView: View {
     var body: some View {
         NavigationStack(path: $navigationCoordinator.navigationPath) {
             rootContentView
-                .navigationDestination(for: MainDestionationView.self) { route in
+                .navigationDestination(for: MainDestinationsView.self) { route in
                     destinationView(for: route)
                 }
         }
@@ -74,7 +74,7 @@ extension MainScreenView {
     
     // MARK: - Navigation Destination
     @ViewBuilder
-    private func destinationView(for route: MainDestionationView) -> some View {
+    private func destinationView(for route: MainDestinationsView) -> some View {
         switch route {
         case .splash:
             SplashScreenView()
@@ -112,7 +112,7 @@ extension MainScreenView {
         hasCompletedOnboarding = true
         showSplash = false
         withAnimation {
-            navigationCoordinator.replace(with: MainDestionationView.home)
+            navigationCoordinator.replace(with: MainDestinationsView.home)
         }
     }
 }

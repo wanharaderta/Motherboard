@@ -46,7 +46,7 @@ struct RegisterScreenView: View {
         }
         .onChange(of: viewModel.isSuccess) { _, isSuccess in
             if isSuccess {
-                navigationCoordinator.replace(with: MainDestionationView.home)
+                navigationCoordinator.replace(with: MainDestinationsView.home)
             }
         }
     }
@@ -187,7 +187,7 @@ struct RegisterScreenView: View {
                 .foregroundColor(Color.mineShaftOpacity86)
             
             Button(action: {
-                navigationCoordinator.push(to: MainDestionationView.login)
+                navigationCoordinator.push(to: MainDestinationsView.login)
             }) {
                 Text(Constants.logIn)
                     .appFont(name: .montserrat, weight: .medium, size: FontSize.title12)

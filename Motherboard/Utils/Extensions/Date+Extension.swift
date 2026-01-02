@@ -68,4 +68,43 @@ extension Date {
         formatter.dateFormat = "hh:mma"
         return formatter.string(from: self)
     }
+    
+    /// Parse time string from hh:mma format to Date
+    /// - Parameter timeString: Time string in hh:mma format (e.g., "08:00AM", "02:30PM")
+    /// - Returns: Date object if parsing succeeds, nil otherwise
+    static func parseTime(from timeString: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "hh:mma"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        guard let timeDate = formatter.date(from: timeString) else { return nil }
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: timeDate)
+        let today = Date()
+        return calendar.date(bySettingHour: components.hour ?? 0, minute: components.minute ?? 0, second: 0, of: today)
+    }
+    
+    /// Add minutes to date
+    /// - Parameter minutes: Number of minutes to add
+    /// - Returns: New date with minutes added
+    func addingMinutes(_ minutes: Int) -> Date {
+        return Calendar.current.date(byAdding: .minute, value: minutes, to: self) ?? self
+    }
+    
+    /// Format date and time to MM/dd/yyyy hh:mma string format
+    /// - Returns: Formatted date and time string (e.g., "12/25/2025 08:00AM")
+    func formatDateAndTime() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd/yyyy hh:mma"
+        return formatter.string(from: self)
+    }
+    
+    /// Parse date and time string from MM/dd/yyyy hh:mma format to Date
+    /// - Parameter dateTimeString: Date and time string in MM/dd/yyyy hh:mma format
+    /// - Returns: Date object if parsing succeeds, nil otherwise
+    static func parseDateAndTime(from dateTimeString: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd/yyyy hh:mma"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter.date(from: dateTimeString)
+    }
 }

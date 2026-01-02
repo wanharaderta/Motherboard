@@ -14,6 +14,7 @@ struct MedicationModelRequest: Codable {
     var route: MedicationRoute?
     var frequency: MedicationFrequency?
     var timeSchedule: String?
+    var intervalHour: Int?
     var medicationStartDate: String?
     var medicationEndDate: String?
     var doctorsNote: String?
@@ -27,6 +28,7 @@ struct MedicationModelRequest: Codable {
         case route
         case frequency
         case timeSchedule
+        case intervalHour
         case medicationStartDate
         case medicationEndDate
         case doctorsNote

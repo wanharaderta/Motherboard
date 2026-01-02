@@ -17,8 +17,7 @@ struct CreateMedicationsScreenView: View {
     
     @FocusState private var focusedField: LabelField?
     
-    @State private var showTimeSchedulePicker = false
-    @State private var selectedTimeSchedule: Date = Date()
+    @State private var selectedTimeInterval: TimeInterval? = nil
     @State private var showStartDatePicker = false
     @State private var selectedStartDate: Date = Date()
     @State private var showEndDatePicker = false
@@ -63,6 +62,11 @@ struct CreateMedicationsScreenView: View {
         .onAppear {
             // Set kidID from UserDefaults or hardcoded for testing
             viewModel.kidID = "tmD5oSt936r75qzwebQ3"
+            
+            // Initialize selectedTimeInterval from intervalHour
+            if let intervalHour = viewModel.medicationRequest.intervalHour {
+                selectedTimeInterval = TimeInterval.allCases.first { $0.code == intervalHour }
+            }
         }
         .onChange(of: selectedPhotos) { oldValue, newValue in
             Task {
@@ -243,10 +247,30 @@ extension CreateMedicationsScreenView {
                 .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
                 .foregroundColor(Color.black300)
             
-            TextField(Constants.enterTimeframe, text: .constant((viewModel.medicationRequest.timeSchedule ?? "").isEmpty ? "" : (viewModel.medicationRequest.timeSchedule ?? "")))
-                .textFieldStyle(.plain)
-                .disabled(true)
-                .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
+            Menu {
+                ForEach(TimeInterval.allCases, id: \.self) { interval in
+                    Button(action: {
+                        selectedTimeInterval = interval
+                        viewModel.medicationRequest.intervalHour = interval.code
+                    }) {
+                        HStack {
+                            Text(interval.displayName)
+                            if selectedTimeInterval == interval {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+                }
+            } label: {
+                HStack {
+                    Text(selectedTimeInterval?.displayName ?? Constants.enterTimeframe)
+                        .appFont(name: .montserrat, weight: .reguler, size: FontSize.title14)
+                        .foregroundColor(selectedTimeInterval == nil ? Color.mainGray : Color.black300)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(Color.mineShaft)
+                        .font(.system(size: 12, weight: .medium))
+                }
                 .padding(Spacing.m)
                 .background(Color.green50)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -254,28 +278,10 @@ extension CreateMedicationsScreenView {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(focusedField == .timeSchedule ? Color.green200 : Color.borderNeutralWhite, lineWidth: 1)
                 )
-                .onTapGesture {
-                    focusedField = .timeSchedule
-                    if let dateString = viewModel.medicationRequest.timeSchedule, !dateString.isEmpty {
-                        selectedTimeSchedule = Date.parseDate(from: dateString) ?? Date()
-                    }
-                    showTimeSchedulePicker.toggle()
-                }
-                .sheet(isPresented: $showTimeSchedulePicker) {
-                    VStack {
-                        DatePicker("", selection: $selectedTimeSchedule, displayedComponents: .date)
-                            .datePickerStyle(.wheel)
-                            .labelsHidden()
-                            .padding()
-                        
-                        Button(Constants.done) {
-                            viewModel.medicationRequest.timeSchedule = selectedTimeSchedule.formatDate()
-                            showTimeSchedulePicker = false
-                        }
-                        .padding()
-                    }
-                    .presentationDetents([.medium])
-                }
+            }
+            .onTapGesture {
+                focusedField = .timeSchedule
+            }
         }
     }
     
@@ -299,20 +305,20 @@ extension CreateMedicationsScreenView {
                 )
                 .onTapGesture {
                     focusedField = .startDate
-                    if let dateString = viewModel.medicationRequest.medicationStartDate, !dateString.isEmpty {
-                        selectedStartDate = Date.parseDate(from: dateString) ?? Date()
+                    if let dateTimeString = viewModel.medicationRequest.medicationStartDate, !dateTimeString.isEmpty {
+                        selectedStartDate = Date.parseDateAndTime(from: dateTimeString) ?? Date.parseDate(from: dateTimeString) ?? Date()
                     }
                     showStartDatePicker.toggle()
                 }
                 .sheet(isPresented: $showStartDatePicker) {
                     VStack {
-                        DatePicker("", selection: $selectedStartDate, displayedComponents: .date)
+                        DatePicker("", selection: $selectedStartDate, displayedComponents: [.date, .hourAndMinute])
                             .datePickerStyle(.wheel)
                             .labelsHidden()
                             .padding()
                         
                         Button(Constants.done) {
-                            viewModel.medicationRequest.medicationStartDate = selectedStartDate.formatDate()
+                            viewModel.medicationRequest.medicationStartDate = selectedStartDate.formatDateAndTime()
                             showStartDatePicker = false
                         }
                         .padding()
@@ -342,20 +348,20 @@ extension CreateMedicationsScreenView {
                 )
                 .onTapGesture {
                     focusedField = .endDate
-                    if let dateString = viewModel.medicationRequest.medicationEndDate, !dateString.isEmpty {
-                        selectedEndDate = Date.parseDate(from: dateString) ?? Date()
+                    if let dateTimeString = viewModel.medicationRequest.medicationEndDate, !dateTimeString.isEmpty {
+                        selectedEndDate = Date.parseDateAndTime(from: dateTimeString) ?? Date.parseDate(from: dateTimeString) ?? Date()
                     }
                     showEndDatePicker.toggle()
                 }
                 .sheet(isPresented: $showEndDatePicker) {
                     VStack {
-                        DatePicker("", selection: $selectedEndDate, displayedComponents: .date)
+                        DatePicker("", selection: $selectedEndDate, displayedComponents: [.date, .hourAndMinute])
                             .datePickerStyle(.wheel)
                             .labelsHidden()
                             .padding()
                         
                         Button(Constants.done) {
-                            viewModel.medicationRequest.medicationEndDate = selectedEndDate.formatDate()
+                            viewModel.medicationRequest.medicationEndDate = selectedEndDate.formatDateAndTime()
                             showEndDatePicker = false
                         }
                         .padding()

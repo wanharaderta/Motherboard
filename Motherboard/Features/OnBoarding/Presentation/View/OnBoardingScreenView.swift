@@ -152,7 +152,7 @@ extension OnBoardingScreenView {
     
     /// Navigate to register screen
     func startRegistration() {
-        navigationCoordinator.push(to: MainDestionationView.register)
+        navigationCoordinator.push(to: MainDestinationsView.register)
     }
 }
 

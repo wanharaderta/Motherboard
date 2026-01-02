@@ -57,7 +57,7 @@ struct LoginScreenView: View {
         }
         .onChange(of: viewModel.isSuccess) { _, isSuccess in
             if isSuccess {
-                navigationCoordinator.replace(with: MainDestionationView.home)
+                navigationCoordinator.replace(with: MainDestinationsView.home)
             }
         }
     }
@@ -116,7 +116,7 @@ struct LoginScreenView: View {
             HStack {
                 Spacer()
                 Button(action: {
-                    navigationCoordinator.push(to: MainDestionationView.forgotPassword)
+                    navigationCoordinator.push(to: MainDestinationsView.forgotPassword)
                 }) {
                     Text(Constants.forgotPassword)
                         .appFont(name: .montserrat, weight: .medium, size: FontSize.title12)
@@ -213,7 +213,7 @@ struct LoginScreenView: View {
                 .foregroundColor(Color.mineShaftOpacity86)
             
             Button(action: {
-                navigationCoordinator.push(to: MainDestionationView.register)
+                navigationCoordinator.push(to: MainDestinationsView.register)
             }) {
                 Text(Constants.signUpHere)
                     .appFont(name: .montserrat, weight: .medium, size: FontSize.title12)
