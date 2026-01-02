@@ -7,8 +7,3 @@
 
 import SwiftUI
 
-extension View {
-    func disableTabViewSwipe() -> some View {
-        self.background(TabViewGestureDisabler())
-    }
-}

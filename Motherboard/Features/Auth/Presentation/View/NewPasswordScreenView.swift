@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ChangePasswordScreenView: View {
+struct NewPasswordScreenView: View {
     
     let oobCode: String
     @State private var viewModel = AuthViewModel()
@@ -173,5 +173,5 @@ struct ChangePasswordScreenView: View {
 }
 
 #Preview {
-    ChangePasswordScreenView(oobCode: "test-code")
+    NewPasswordScreenView(oobCode: "test-code")
 }
